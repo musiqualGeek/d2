@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDhbEONc2pMcZEeAmS-huLiJfCRPlP9C-E",
-  authDomain: "video-com-75ad3.firebaseapp.com",
-  projectId: "video-com-75ad3",
-  storageBucket: "video-com-75ad3.appspot.com",
-  messagingSenderId: "516845873622",
-  appId: "1:516845873622:web:1edfd857da1f127c085c77",
-  measurementId: "G-3JSZ2890WE"
+  apiKey: "AIzaSyCK4xQZf6B0HZvnZ8tjvfexZNTSkEjeXJM",
+  authDomain: "d2app-aa2d2.firebaseapp.com",
+  projectId: "d2app-aa2d2",
+  storageBucket: "d2app-aa2d2.appspot.com",
+  messagingSenderId: "850654856714",
+  appId: "1:850654856714:web:ad0a81a77533842e2581f3",
+  measurementId: "G-LNS8J7LZDK",
 };
 
 // Initialize Firebase

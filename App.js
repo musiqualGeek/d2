@@ -1,5 +1,5 @@
 import React from 'react';
-import { store } from "./app/redux/store";
+import { store } from "./redux/createStore";
 import { Provider } from "react-redux";
 import AppNavigator from './app/navigation/AppNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context'

@@ -5,15 +5,7 @@ const INITIAL_STATE = {
   propertySignInSuccess: false,
   propertySignUpSuccess: false,
   propertyRecoverySuccess: false,
-  propertyPhoneSignInSuccess: false,
-  phoneUserInfoSaved: false,
-
-  //UserName + Avatar
-  theUserName: null,
-  theUserAvatar: null,
-  // Fetch
-  fetchUserD: null,
-  // Errors
+  userD: null,
   errors: [],
 };
 
@@ -23,43 +15,24 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case userTypes.USER_SIGN_IN_SUCCESS:
       return {
         ...state,
-        propertySignInSuccess: action.payload,
+        propertySignInSuccess: true,
         currentProperty: true,
-        theUserName: action.theUserName,
-        theUserAvatar: action.theUserAvatar,
-      };
-    case userTypes.USER_PHONE_SIGN_IN_SUCCESS:
-      return {
-        ...state,
-        propertyPhoneSignInSuccess: action.payload,
-        currentProperty: true,
-      };
-    case userTypes.USER_PHONE_INFO_SAVED:
-      return {
-        ...state,
-        phoneUserInfoSaved: true,
+        userD: action.payload,
       };
     case userTypes.USER_SIGN_UP_SUCCESS:
       return {
         ...state,
-        propertySignUpSuccess: action.payload,
-        currentProperty: true,
+        propertySignUpSuccess: true,
       };
     case userTypes.USER_RECOVERY_SUCCESS:
       return {
         ...state,
         propertyRecoverySuccess: action.payload,
       };
-
     // PROPERTY
     case userTypes.OUT_CURRENT_USER:
       return {
         ...INITIAL_STATE,
-      };
-    case userTypes.FETCH_USER:
-      return {
-        ...state,
-        fetchUserD: action.payload,
       };
 
     // ERRORS
@@ -79,9 +52,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         propertySignInSuccess: false,
         propertySignUpSuccess: false,
         propertyRecoverySuccess: false,
-        // Fetch
-        fetchUserD: null,
-        // Errors
+        userD: null,
         errors: [],
       };
     // DEFAULT
