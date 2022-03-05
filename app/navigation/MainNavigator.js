@@ -15,6 +15,7 @@ import RegisterDriver from "../screens/Auth/RegisterDriver";
 import LoginDriver from "../screens/Auth/LooginDriver";
 import Profile from "../screens/Profile";
 import ProfileDriver from "../screens/ProfileDriver";
+import MyOrders from "../screens/MyOrders";
 
 const Stack = createStackNavigator();
 
@@ -51,6 +52,7 @@ const MainNavigator = () => {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="MapScreen" component={MapScreen} />
           <Stack.Screen name="profile" component={Profile} />
+          <Stack.Screen name="myOrders" component={MyOrders} />
         </>
       )}
       {currentProperty && userD?.type == "1" && (

@@ -65,6 +65,7 @@ const Register = ({ navigation }) => {
     if (propertySignUpSuccess) {
       ResetForm();
       dispatch(resetAllAuthForms());
+      navigation.navigate('login')
     }
   }, [propertySignUpSuccess]);
 

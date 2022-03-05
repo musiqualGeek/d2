@@ -34,6 +34,11 @@ const Login = ({ navigation }) => {
   const [emailErrors, setEmailErrors] = useState("");
   const [passwordErrors, setPasswordErrors] = useState("");
 
+  const ResetForm = () => {
+    onChangeEmail("");
+    onChangepassword("");
+  };
+
   const handlePasswordSecure = () => {
     setIsSecure(!isSecure);
     if (isSecure) {
@@ -45,6 +50,7 @@ const Login = ({ navigation }) => {
 
   useEffect(() => {
     if (propertySignInSuccess) {
+      ResetForm();
       dispatch(resetAllAuthForms());
     }
   }, [propertySignInSuccess]);

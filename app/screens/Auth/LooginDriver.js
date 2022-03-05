@@ -42,6 +42,10 @@ const LoginDriver = ({ navigation }) => {
       setIconPasswordName("eye");
     }
   };
+  const ResetForm = () => {
+    onChangeEmail("");
+    onChangepassword("");
+  };
 
   useEffect(() => {
     if (propertySignInSuccess) {

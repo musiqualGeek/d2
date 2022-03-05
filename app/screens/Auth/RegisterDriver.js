@@ -65,6 +65,7 @@ const RegisterDriver = ({ navigation }) => {
     if (propertySignUpSuccess) {
       ResetForm();
       dispatch(resetAllAuthForms());
+      navigation.navigate("loginDriver");
     }
   }, [propertySignUpSuccess]);
 
@@ -231,6 +232,13 @@ const styles = StyleSheet.create({
     fontSize: 36,
     color: "black",
     fontWeight: "bold",
+  },
+  title32: {
+    width: "auto",
+    fontSize: 36,
+    color: "white",
+    fontWeight: "bold",
+    backgroundColor: COLORS.pink,
   },
   title4: {
     fontSize: 18,

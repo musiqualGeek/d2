@@ -12,7 +12,10 @@ import {
 import tailwind from "tailwind-react-native-classnames";
 import { Icon } from "react-native-elements";
 import Screen from "./Screen";
+import uuid from "react-native-uuid";
 import { useSelector } from "react-redux";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../../firebase/utils";
 
 const data = [
   {
@@ -37,15 +40,18 @@ const data = [
 
 const SEARCH_CHARGE_RATE = 1.5;
 
-const mapState = ({ data }) => ({
+const mapState = ({ data, user }) => ({
   origin: data.origin,
   destination: data.destination,
+  travelTime: data.travelTime,
+  userD: user.userD,
 });
 
 const RideOptionsCard = () => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
-  const { origin, destination, travelTime } = useSelector(mapState);
+  const { origin, destination, travelTime, userD } = useSelector(mapState);
+  console.log({ origin, destination, travelTime });
 
   useEffect(() => {
     if (!origin || !destination) navigation.push("NavigateCard");
@@ -53,19 +59,35 @@ const RideOptionsCard = () => {
 
   const travelConst = (item) => {
     return (
-      (travelTime?.duration?.value *
-        SEARCH_CHARGE_RATE *
-        item?.multiplier) /
+      (travelTime?.duration?.value * SEARCH_CHARGE_RATE * item?.multiplier) /
       100
     ).toFixed(2);
   };
 
-  const onChoose = () => {
+  const onChoose = async () => {
+    await addDoc(collection(db, "orders"), {
+      id: uuid.v4(),
+      user: userD.id,
+      destination: destination,
+      origin: origin,
+      car: selected.title,
+      price: travelConst(selected),
+      distance: travelTime?.distance?.text,
+      travelTime: travelTime?.duration.text,
+    });
     Alert.alert(
       "configurations!!!",
       `Car: ${selected.title} \nPrice: $${travelConst(selected)} \nDistence: ${
         travelTime?.distance?.text
-      } \n${travelTime?.duration.text} Travel time`
+      } \n${
+        travelTime?.duration.text
+      } Travel time\n Please Wait with us until a driver accept it.`,
+      [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("myOrders"),
+        },
+      ]
     );
   };
 

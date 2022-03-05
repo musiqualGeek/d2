@@ -19,12 +19,12 @@ const data = [
     image: "https://links.papareact.com/3pn",
     screen: "MapScreen",
   },
-  // {
-  //     id: '4354',
-  //     title: 'Order food',
-  //     image: 'https://links.papareact.com/28w',
-  //     screen: 'EatsScreen'
-  // },
+  {
+      id: '4354',
+      title: 'My Orders',
+      image: 'https://links.papareact.com/28w',
+      screen: 'myOrders'
+  },
 ];
 const mapState = ({ data }) => ({
   origin: data.origin,
