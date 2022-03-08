@@ -29,36 +29,12 @@ import {
 } from "firebase/firestore";
 
 const mapState = ({ user }) => ({
-  currentProperty: user.currentProperty,
-  errors: user.errors,
+  userD: user.userD,
 });
 
 const Profile = ({ navigation }) => {
-  const { currentProperty, errors } = useSelector(mapState);
+  const { userD } = useSelector(mapState);
   const dispatch = useDispatch();
-  const [user, setUser] = useState(null);
-  const [userId, setUserId] = useState(null);
-
-  const getUser = async () => {
-    const q = query(
-      collection(db, "users"),
-      where("id", "==", auth.currentUser.uid)
-    );
-    const querySnapshot = onSnapshot(q, (snapshot) => {
-      snapshot.docs.map((doc) => {
-        setUserId(doc.id);
-        setUser(doc.data());
-      });
-    });
-    return () => querySnapshot();
-  };
-
-  useEffect(() => {
-    const querySnapshot = getUser();
-    return () => {
-      querySnapshot;
-    };
-  }, []);
 
   const handleLogout = () => {
     dispatch(signOutUser());
@@ -71,20 +47,15 @@ const Profile = ({ navigation }) => {
             <Image
               style={styles.profileImageStyle}
               source={{
-                uri: user?.avatar,
+                uri: userD?.avatar,
               }}
             />
           </View>
           <View style={styles.rightHeader}>
-            <Text style={styles.nameStyle}>{user?.name}</Text>
-            <Text style={styles.tagStyle}>{`@${user?.name}`}</Text>
+            <Text style={styles.nameStyle}>{userD?.name}</Text>
+            <Text style={styles.tagStyle}>{`@${userD?.name}`}</Text>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("editProfile", {
-                  user,
-                  userId,
-                })
-              }
+              onPress={() => navigation.navigate("editProfile")}
             >
               <Text style={styles.editProfileStyle}>Edit profile</Text>
             </TouchableOpacity>

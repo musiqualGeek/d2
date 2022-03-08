@@ -27,7 +27,7 @@ const LoginDriver = ({ navigation }) => {
   const { propertySignInSuccess, errors } = useSelector(mapState);
   const dispatch = useDispatch();
   dispatch(ResetErrorsState);
-  const [email, onChangeEmail] = useState("strange@gmail.com");
+  const [email, onChangeEmail] = useState("driver@gmail.com");
   const [password, onChangepassword] = useState("hellodude");
   const [isSecure, setIsSecure] = useState(true);
   const [iconPasswordName, setIconPasswordName] = useState("eye-with-line");

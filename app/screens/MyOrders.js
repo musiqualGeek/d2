@@ -7,6 +7,8 @@ import {
   Image,
   ScrollView,
   FlatList,
+  Dimensions,
+  Alert,
 } from "react-native";
 import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -17,6 +19,8 @@ import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/utils";
+import { icons } from "../../constants";
+import moment from 'moment';
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -46,14 +50,17 @@ const MyOrders = () => {
     console.log("userD => ", userD);
     console.log("Orders => ", orders);
   }, [orders]);
+  const handleCloseOrder = (id) => {
+    const q = query(collection(db, "orders"), where("id", "==", id));
+  };
   const renderModel = () => {
     return (
       <Modal
-        isVisible={selected}
+        isVisible={selected ? true : false}
         backdropOpacity={0.5}
         // onBackdropPress={() => setModalVisible(false)}
         onBackdropPress={() => setSelected(null)}
-        swipeDirection={["up"]}
+        // swipeDirection={["down"]}
         // scrollOffsetMax={400 - 300} // content height - ScrollView height
         propagateSwipe={true}
         style={styles.modal}
@@ -65,26 +72,82 @@ const MyOrders = () => {
               style={[tw`shadow-lg`, styles.avatar]}
               resizeMode="cover"
             />
-            <ScrollView>
-              <View style={tw`flex flex-row justify-around mt-4`}>
+            <ScrollView
+              style={tw`max-w-lg`}
+              showsVerticalScrollIndicator={false}
+            >
+              <Text style={styles.modelTitle}>{userD.name}</Text>
+              <View style={tw`flex flex-row justify-around mt-6`}>
                 <View
-                  style={tw`p-2 pb-6 pt-4 bg-gray-200 mr-4 ml-4 rounded-lg w-24`}
+                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
                 >
                   <Text>Distance</Text>
+                  <Text style={tw`text-lg font-bold`}>{selected.distance}</Text>
                 </View>
                 <View
-                  style={tw`p-2 pb-6 pt-4 bg-gray-200 mr-4 ml-4 rounded-lg w-24`}
+                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
                 >
                   <Text>Price</Text>
+                  <Text style={tw`text-lg font-bold`}>${selected.price}</Text>
+                </View>
+                <View
+                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
+                >
+                  <Text>Duration</Text>
+                  <Text style={tw`text-lg font-bold`}>
+                    {selected.travelTime}
+                  </Text>
                 </View>
               </View>
-              <Text style={styles.modelTitle}>Model Title</Text>
-              <Text style={styles.contactNumber}>
-                {selected.origin.description}
-              </Text>
-              <Text style={styles.contactNumber}>
-                {selected.destination.description}
-              </Text>
+              <View
+                style={tw`p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
+              >
+                <Text style={tw`text-xs font-bold`}>From: </Text>
+                <Text style={styles.contactNumber}>
+                  {selected.origin.description}
+                </Text>
+              </View>
+              <View
+                style={tw`p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
+              >
+                <Text style={tw`text-xs font-bold`}>To: </Text>
+                <Text style={styles.contactNumber}>
+                  {selected.destination.description}
+                </Text>
+              </View>
+              <View
+                style={[
+                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                  {
+                    backgroundColor:
+                      selected?.status === "open"
+                        ? "#84CC16"
+                        : "#DC2626",
+                  },
+                ]}
+              >
+                <Text style={tw`text-center text-white text-base`}>
+                  {selected?.status
+                    ? "Waiting For Driver To Accept..."
+                    : "Closed"}
+                </Text>
+              </View>
+              {selected?.status === "open" &&(
+
+                <TouchableOpacity
+                onPress={handleCloseOrder}
+                style={[
+                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                  {
+                    backgroundColor: "#DC2626"
+                  },
+                ]}
+              >
+                <Text style={tw`text-center text-white text-base`}>
+                  Close Order
+                </Text>
+              </TouchableOpacity>
+              )}
             </ScrollView>
           </View>
         )}
@@ -108,6 +171,7 @@ const MyOrders = () => {
         <Image
           source={{ uri: userD.avatar }}
           style={{ width: 38, height: 38, borderRadius: 20 }}
+          resizeMode="cover"
         />
       </TouchableOpacity>
       <View style={tw`p-5`}>
@@ -118,7 +182,7 @@ const MyOrders = () => {
           data={orders}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={tw`p-2 pb-6 pt-4 bg-gray-200 mr-4 ml-4 rounded-lg`}
+              style={tw`p-2 pb-4 pt-4 bg-gray-200 mr-4 mb-6 ml-4 rounded-lg`}
               onPress={() => {
                 console.log("Clicked !!");
                 setSelected(item);
@@ -126,7 +190,7 @@ const MyOrders = () => {
               }}
             >
               <View style={tw`flex flex-row`}>
-                <View>
+                <View style={{ width: "14%", paddingTop: 5, }}>
                   <MaterialCommunityIcons
                     name="ray-start-arrow"
                     size={42}
@@ -134,7 +198,7 @@ const MyOrders = () => {
                     style={styles.icon1}
                   />
                 </View>
-                <View>
+                <View style={{ width: "74%" }}>
                   <View style={tw`flex flex-row mb-3`}>
                     <Text style={tw`text-xs w-10`}>From</Text>
                     <Text style={tw`text-xs font-bold`}>
@@ -153,6 +217,30 @@ const MyOrders = () => {
                     </Text>
                   </View>
                 </View>
+                <View
+                  style={{
+                    width: "10%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    source={
+                      item?.status === "open" ? icons.valid : icons.notValid
+                    }
+                    style={styles.icon}
+                  />
+                  <Text style={{ fontSize: 10 }}>
+                    {item?.status === "op en" ? "Open" : "Closed"}
+                  </Text>
+                  <Text></Text>
+                </View>
+              </View>
+              <View>
+                {item.createdAt && (
+                  <Text style={tw`text-gray-600 text-xs text-right pr-2`} >{moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}</Text>
+                  )}
               </View>
             </TouchableOpacity>
           )}
@@ -220,14 +308,18 @@ const styles = StyleSheet.create({
     color: "black",
     textAlign: "center",
     marginTop: 20,
-    marginBottom: 10,
+    textTransform: "capitalize",
   },
   avatar: {
     position: "absolute",
     top: "-12.5%",
-    left: "45.5%",
-    width: "25%",
-    height: "25%",
+    left: "44%",
+    width: Dimensions.get("window").width / 4,
+    height: Dimensions.get("window").width / 4,
     borderRadius: 50,
+  },
+  icon: {
+    width: 20,
+    height: 20,
   },
 });

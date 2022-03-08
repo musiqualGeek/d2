@@ -16,6 +16,8 @@ import LoginDriver from "../screens/Auth/LooginDriver";
 import Profile from "../screens/Profile";
 import ProfileDriver from "../screens/ProfileDriver";
 import MyOrders from "../screens/MyOrders";
+import EditProfileDriver from "../screens/EditProfileDriver";
+import EditProfile from "../screens/EditProfile";
 
 const Stack = createStackNavigator();
 
@@ -52,6 +54,7 @@ const MainNavigator = () => {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="MapScreen" component={MapScreen} />
           <Stack.Screen name="profile" component={Profile} />
+          <Stack.Screen name="editProfile" component={EditProfile} />
           <Stack.Screen name="myOrders" component={MyOrders} />
         </>
       )}
@@ -59,6 +62,7 @@ const MainNavigator = () => {
         <>
           <Stack.Screen name="EatsScreen" component={EatsScreen} />
           <Stack.Screen name="profileDriver" component={ProfileDriver} />
+          <Stack.Screen name="editProfile" component={EditProfileDriver} />
         </>
       )}
     </Stack.Navigator>

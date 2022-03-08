@@ -73,7 +73,10 @@ const RideOptionsCard = () => {
       car: selected.title,
       price: travelConst(selected),
       distance: travelTime?.distance?.text,
-      travelTime: travelTime?.duration.text,
+      travelTime: travelTime?.duration?.text,
+      status: "open",
+      createdAt: new Date(),
+      closedAt: null,
     });
     Alert.alert(
       "configurations!!!",
