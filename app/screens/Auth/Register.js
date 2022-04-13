@@ -41,6 +41,11 @@ const Register = ({ navigation }) => {
   const [emailErrors, setEmailErrors] = useState("");
   const [passwordErrors, setPasswordErrors] = useState("");
   const [termsErrors, setTermsErrors] = useState("");
+  const [currentErrors, setCurrentErrors] = useState(errors);
+
+  useEffect(() => {
+    ResetForm();
+  }, []);
 
   const ResetForm = () => {
     onChangefirstName("");
@@ -50,6 +55,7 @@ const Register = ({ navigation }) => {
     setIconPasswordName("eye");
     setSelected(false);
     setError([]);
+    setCurrentErrors("");
   };
 
   const handlePasswordSecure = () => {
@@ -65,7 +71,7 @@ const Register = ({ navigation }) => {
     if (propertySignUpSuccess) {
       ResetForm();
       dispatch(resetAllAuthForms());
-      navigation.navigate('login')
+      navigation.navigate("login");
     }
   }, [propertySignUpSuccess]);
 
@@ -194,7 +200,7 @@ const Register = ({ navigation }) => {
               )}
             </View>
             <Text style={[styles.fieldErrors, { marginTop: 10 }]}>
-              {errors}
+              {currentErrors}
             </Text>
             <View style={styles.login}>
               <Text style={(styles.loginText, { color: COLORS.grey })}>

@@ -6,6 +6,7 @@ const INITIAL_STATE = {
   propertySignUpSuccess: false,
   propertyRecoverySuccess: false,
   userD: null,
+  userDocId: null,
   errors: [],
 };
 
@@ -29,10 +30,20 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         propertyRecoverySuccess: action.payload,
       };
-    // PROPERTY
     case userTypes.OUT_CURRENT_USER:
       return {
         ...INITIAL_STATE,
+      };
+    // USER
+    case userTypes.SET_USER:
+      return {
+        ...state,
+        userD: action.payload,
+      };
+    case userTypes.SET_USER_DOC_ID:
+      return {
+        ...state,
+        userDocId: action.payload,
       };
 
     // ERRORS

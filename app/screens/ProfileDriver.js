@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Image,
   ScrollView,
@@ -8,57 +8,22 @@ import {
   View,
 } from "react-native";
 import {
-  Foundation,
-  MaterialCommunityIcons,
-  MaterialIcons,
   FontAwesome5,
   Ionicons,
   Octicons,
   AntDesign,
 } from "@expo/vector-icons";
-import { COLORS } from "../../constants";
+import { COLORS, icons } from "../../constants";
 import { signOutUser } from "../../redux/User/user.actions";
 import { useSelector, useDispatch } from "react-redux";
-import { auth, db } from "../../firebase/utils";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  onSnapshot,
-} from "firebase/firestore";
 
 const mapState = ({ user }) => ({
-  currentProperty: user.currentProperty,
-  errors: user.errors,
+  userD: user.userD,
 });
 
 const ProfileDriver = ({ navigation }) => {
-  const { currentProperty, errors } = useSelector(mapState);
+  const { userD } = useSelector(mapState);
   const dispatch = useDispatch();
-  const [user, setUser] = useState(null);
-  const [userId, setUserId] = useState(null);
-
-  const getUser = async () => {
-    const q = query(
-      collection(db, "users"),
-      where("id", "==", auth.currentUser.uid)
-    );
-    const querySnapshot = onSnapshot(q, (snapshot) => {
-      snapshot.docs.map((doc) => {
-        setUserId(doc.id);
-        setUser(doc.data());
-      });
-    });
-    return () => querySnapshot();
-  };
-
-  useEffect(() => {
-    const querySnapshot = getUser();
-    return () => {
-      querySnapshot;
-    };
-  }, []);
 
   const handleLogout = () => {
     dispatch(signOutUser());
@@ -71,26 +36,107 @@ const ProfileDriver = ({ navigation }) => {
             <Image
               style={styles.profileImageStyle}
               source={{
-                uri: user?.avatar,
+                uri: userD?.avatar,
               }}
             />
           </View>
           <View style={styles.rightHeader}>
-            <Text style={styles.nameStyle}>{user?.name}</Text>
-            <Text style={styles.tagStyle}>{`@${user?.name}`}</Text>
+            <Text style={styles.nameStyle}>{userD?.name}</Text>
+            <Text style={styles.tagStyle}>{`@${userD?.name}`}</Text>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("editProfile", {
-                  user,
-                  userId,
-                })
-              }
+              onPress={() => navigation.navigate("editProfile")}
             >
               <Text style={styles.editProfileStyle}>Edit profile</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
+      <ScrollView style={{ backgroundColor: "#f7f8fa" }}>
+        <View style={styles.content}>
+          <View style={styles.content2}>
+            <TouchableOpacity
+              style={[
+                styles.itemStyle,
+                {
+                  borderTopLeftRadius: 8,
+                  borderTopRightRadius: 8,
+                },
+              ]}
+              onPress={() => navigation.navigate("driverPhoto")}
+            >
+              <View style={styles.itemleftStyle}>
+                <View
+                  style={[
+                    styles.iconContainer,
+                    {
+                      backgroundColor: "#fa2b53",
+                      paddingLeft: 7.5,
+                      paddingTop: 7,
+                    },
+                  ]}
+                >
+                  <Image
+                    source={icons.i0}
+                    style={{ tintColor: "white", width: 16, height: 16 }}
+                  />
+                </View>
+                <Text style={styles.itemlListStyle}>Driver Photo</Text>
+              </View>
+              <AntDesign name="right" size={16} color="#c9c8ce" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.itemStyle]}
+              onPress={() => navigation.navigate("driverLicense")}
+            >
+              <View style={styles.itemleftStyle}>
+                <View
+                  style={[
+                    styles.iconContainer,
+                    {
+                      backgroundColor: "#5cc7fd",
+                      paddingLeft: 7,
+                      paddingTop: 7,
+                    },
+                  ]}
+                >
+                  <Image
+                    source={icons.i1}
+                    style={{ tintColor: "white", width: 16, height: 16 }}
+                  />
+                </View>
+                <Text style={styles.itemlListStyle}>Driver License</Text>
+              </View>
+              <AntDesign name="right" size={16} color="#c9c8ce" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.itemStyle,
+                {
+                  borderBottomLeftRadius: 8,
+                  borderBottomRightRadius: 8,
+                },
+              ]}
+              onPress={() => navigation.navigate("carLicensePlate")}
+            >
+              <View style={styles.itemleftStyle}>
+                <View
+                  style={[
+                    styles.iconContainer,
+                    { backgroundColor: "#94d74c", paddingLeft: 7 },
+                  ]}
+                >
+                  <Image
+                    source={icons.i2}
+                    style={{ tintColor: "white", width: 16, height: 16 }}
+                  />
+                </View>
+                <Text style={styles.itemlListStyle}>Car License Plate</Text>
+              </View>
+              <AntDesign name="right" size={16} color="#c9c8ce" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
       <ScrollView style={{ backgroundColor: "#f7f8fa" }}>
         <View style={styles.content}>
           <View style={styles.content2}>

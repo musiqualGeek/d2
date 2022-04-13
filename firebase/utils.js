@@ -3,14 +3,16 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
+// alliedTechnologies59
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCK4xQZf6B0HZvnZ8tjvfexZNTSkEjeXJM",
-  authDomain: "d2app-aa2d2.firebaseapp.com",
-  projectId: "d2app-aa2d2",
-  storageBucket: "d2app-aa2d2.appspot.com",
-  messagingSenderId: "850654856714",
-  appId: "1:850654856714:web:ad0a81a77533842e2581f3",
-  measurementId: "G-LNS8J7LZDK",
+  apiKey: "AIzaSyAZn3jhZ6hryQRJmD86aHUz-4PJ4sTi7u4",
+  authDomain: "d2app-74e2c.firebaseapp.com",
+  projectId: "d2app-74e2c",
+  storageBucket: "d2app-74e2c.appspot.com",
+  messagingSenderId: "524401658101",
+  appId: "1:524401658101:web:b1c74674017055f7b0ddbc",
+  measurementId: "G-HVEHZVSMT1"
 };
 
 // Initialize Firebase

@@ -18,6 +18,10 @@ import ProfileDriver from "../screens/ProfileDriver";
 import MyOrders from "../screens/MyOrders";
 import EditProfileDriver from "../screens/EditProfileDriver";
 import EditProfile from "../screens/EditProfile";
+// Driver Paper
+import CarLicensePlate from "../screens/DriverPaper/CarLicensePlate";
+import DriverLicense from "../screens/DriverPaper/DriverLicense";
+import DriverPhoto from "../screens/DriverPaper/DriverPhoto";
 
 const Stack = createStackNavigator();
 
@@ -63,6 +67,10 @@ const MainNavigator = () => {
           <Stack.Screen name="EatsScreen" component={EatsScreen} />
           <Stack.Screen name="profileDriver" component={ProfileDriver} />
           <Stack.Screen name="editProfile" component={EditProfileDriver} />
+          {/* DriverPaper */}
+          <Stack.Screen name="carLicensePlate" component={CarLicensePlate} />
+          <Stack.Screen name="driverLicense" component={DriverLicense} />
+          <Stack.Screen name="driverPhoto" component={DriverPhoto} />
         </>
       )}
     </Stack.Navigator>

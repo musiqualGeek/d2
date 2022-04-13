@@ -33,10 +33,16 @@ const Login = ({ navigation }) => {
   const [iconPasswordName, setIconPasswordName] = useState("eye-with-line");
   const [emailErrors, setEmailErrors] = useState("");
   const [passwordErrors, setPasswordErrors] = useState("");
+  const [currentErrors, setCurrentErrors] = useState(errors);
+
+  useEffect(() => {
+    ResetForm();
+  }, []);
 
   const ResetForm = () => {
-    onChangeEmail("");
-    onChangepassword("");
+    // onChangeEmail("");
+    // onChangepassword("");
+    setCurrentErrors("");
   };
 
   const handlePasswordSecure = () => {
@@ -153,6 +159,9 @@ const Login = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
+          <Text style={[styles.fieldErrors, { marginTop: 10 }]}>
+            {currentErrors}
+          </Text>
           {/* Bottom Line */}
           <View style={styles.signInContainer}>
             <Text style={styles.title}>Don't have an account?</Text>
@@ -280,6 +289,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
+  },
+  fieldErrors: {
+    color: "red",
+    fontSize: 14,
+    textAlign: "center",
   },
   eyeIcon: {
     position: "absolute",

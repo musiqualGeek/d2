@@ -6,10 +6,10 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
+  Dimensions,
 } from "react-native";
-import { COLORS } from "../../constants";
-import { storage, db } from "../../firebase/utils";
+import { COLORS } from "../../../constants";
+import { storage, db } from "../../../firebase/utils";
 import { doc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as DocumentPicker from "expo-document-picker";
@@ -21,26 +21,28 @@ const mapState = ({ user }) => ({
   userDocId: user.userDocId,
 });
 
-const EditProfile = ({ navigation }) => {
+const DriverLicense = ({ navigation }) => {
   const { userD, userDocId } = useSelector(mapState);
-  const [avatar, setAvatar] = useState(userD?.avatar);
-  const [firstName, setFirstName] = useState(userD?.name);
+  const [avatar, setAvatar] = useState(userD?.driverLicense);
 
   const updateAvatarUser = async (downloadURL) => {
     const userRef = doc(db, "users", userDocId);
     await updateDoc(userRef, {
-      avatar: downloadURL,
+      driverLicense: downloadURL,
       updatedAt: new Date(),
     })
       .then(() => {
-        console.log("Avatar switched !!");
+        console.log("driver Photo switched !!");
       })
       .catch((err) => console.error(err));
   };
   const handleUpload = async () => {
     if (avatar.length > 0) {
       const url_uuid = uuid.v4();
-      const storageRef = ref(storage, `${userD?.email}/${url_uuid}.png`);
+      const storageRef = ref(
+        storage,
+        `${userD?.email}/driverLicense/${url_uuid}.png`
+      );
       try {
         const r = await fetch(avatar);
         const b = await r.blob();
@@ -56,17 +58,6 @@ const EditProfile = ({ navigation }) => {
       } catch (error) {
         console.log("Catch ", error);
       }
-    }
-    if (firstName !== userD?.name) {
-      const userRef = doc(db, "users", userDocId);
-      await updateDoc(userRef, {
-        name: firstName,
-        updatedAt: new Date(),
-      })
-        .then(() => {
-          console.log("FirstName switched !!");
-        })
-        .catch((err) => console.error(err));
     }
     navigation.goBack();
   };
@@ -85,61 +76,41 @@ const EditProfile = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        <Text style={styles.title}>Driver License</Text>
         {/* Profile Picture */}
         <View style={styles.pictureContainer}>
           <TouchableOpacity
-            style={styles.picture}
+            style={styles.pictureT}
             onPress={handleChangePicture}
           >
-            <Image
-              style={styles.picture}
-              source={{
-                uri: avatar,
-              }}
-            />
+            {avatar.length > 0 ? (
+              <Image
+                style={styles.picture}
+                source={{
+                  uri: avatar,
+                }}
+              />
+            ) : (
+              <Image
+                style={styles.picture}
+                source={{
+                  uri: "https://firebasestorage.googleapis.com/v0/b/d2app-74e2c.appspot.com/o/placeholder.png?alt=media&token=fccda0f3-6a61-4270-9635-d04c65a64a51",
+                }}
+              />
+            )}
             <View style={styles.editBtn}></View>
-            <Text style={styles.editBtnTitle}>Edit Profile Picture</Text>
+            <Text style={styles.editBtnTitle}>Edit Driver License</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.content}>
-          {/* First Name */}
-          <View style={styles.detailsContainer}>
-            <View style={[styles.searchContainer, styles.shadow]}>
-              <Text style={styles.title4}>First Name</Text>
-              <TextInput
-                style={styles.searchInput}
-                value={firstName}
-                onChangeText={setFirstName}
-              />
-            </View>
-          </View>
-          {/* Email */}
-          <View style={styles.detailsContainer}>
-            <View style={[styles.searchContainer, styles.shadow]}>
-              <Text style={styles.title4}>Email</Text>
-              <TextInput style={styles.searchInput} value={userD?.email} />
-            </View>
-          </View>
-          {/* Email */}
-          <View style={styles.detailsContainer}>
-            <View style={[styles.searchContainer, styles.shadow]}>
-              <Text style={styles.title4}>Phone Number</Text>
-              <TextInput
-                style={styles.searchInput}
-                value={userD?.phone || "No phone Number connected."}
-              />
-            </View>
-          </View>
-          <TouchableOpacity style={styles.pinkBtn} onPress={handleSubmit}>
-            <Text style={styles.textBtn}>Save</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.pinkBtn} onPress={handleSubmit}>
+          <Text style={styles.textBtn}>Save</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
 };
 
-export default EditProfile;
+export default DriverLicense;
 
 const styles = StyleSheet.create({
   container: {
@@ -149,6 +120,12 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: COLORS.greyBg,
+    paddingHorizontal: 10,
+    paddingTop: 30,
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 20,
   },
   pictureContainer: {
     width: "100%",
@@ -156,9 +133,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 20,
   },
+  pictureT: {
+    width: "100%",
+    borderRadius: 5,
+  },
   picture: {
-    width: 120,
-    height: 120,
+    width: "100%",
+    height: 200,
     borderRadius: 5,
     marginRight: 10,
   },
@@ -176,27 +157,7 @@ const styles = StyleSheet.create({
     marginTop: -20,
     color: "white",
     fontSize: 13,
-    paddingLeft: 5,
-  },
-  //   Details
-  content: {
-    padding: 10,
-  },
-  detailsContainer: {},
-  title4: {
-    color: COLORS.fontColor4,
-    fontSize: 10,
-  },
-  searchContainer: {
-    backgroundColor: "white",
-    color: COLORS.primary,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  searchInput: {
-    fontSize: 18,
+    paddingLeft: (Dimensions.get("window").width - 20) / 2.7,
   },
   shadow: {
     shadowColor: "#cdcddd",

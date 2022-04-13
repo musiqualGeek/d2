@@ -14,20 +14,23 @@ import Screen from "../components/Screen";
 import Constants from "expo-constants";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebase/utils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { icons } from "../../constants";
-import moment from 'moment';
+import moment from "moment";
 import Modal from "react-native-modal";
 import * as WebBrowser from "expo-web-browser";
+import { auth, db } from "../../firebase/utils";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { setUserD } from "../../redux/User/user.actions";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
+  userDocId: user.userDocId,
 });
 
 const EatsScreen = () => {
-  const { userD } = useSelector(mapState);
+  const { userD, userDocId } = useSelector(mapState);
+  const dispatch = useDispatch();
   const [orders, setOrders] = useState(null);
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
@@ -47,15 +50,39 @@ const EatsScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log("orders", orders)
-  }, [orders])
+    const q = query(
+      collection(db, "users"),
+      where("id", "==", auth.currentUser.uid)
+    );
+    const querySnapshot = onSnapshot(q, (snapshot) => {
+      snapshot.docs.map((doc) => {
+        dispatch(setUserD(doc.data(), doc.id));
+      });
+    });
+    return () => {
+      querySnapshot();
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("userD");
+    console.log(userD);
+    console.log(userDocId);
+  }, [userD]);
+
+  useEffect(() => {
+    console.log("orders", selected);
+  }, [selected]);
 
   const handleCloseOrder = (id) => {
     const q = query(collection(db, "orders"), where("id", "==", id));
   };
-  const handleRoute = () => {
-    WebBrowser.openBrowserAsync(`https://www.google.com/maps/dir/?api=1&origin&destination=${selected.destination.location.lat}%2C${selected.destination.location.lng}&travelmode=driving`);
-  }
+  const handleRoute = async (item) => {
+    console.log("Selected => ", item);
+    await WebBrowser.openBrowserAsync(
+      `https://www.google.com/maps/dir/?api=1&origin&destination=${item.lat.toString()}%2C${item.lng.toString()}&travelmode=driving`
+    );
+  };
   const renderModel = () => {
     return (
       <Modal
@@ -119,37 +146,39 @@ const EatsScreen = () => {
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => handleRoute()}
+                onPress={() => {
+                  console.log(
+                    "YOYOYOYOYOYOY => ",
+                    selected.destination.loaction
+                  );
+                  handleRoute(selected.destination.loaction);
+                }}
                 style={[
                   tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
                   {
                     backgroundColor:
-                      selected?.status === "open"
-                        ? "#84CC16"
-                        : "#DC2626",
-                  },
-                ]}
-                >
-                <Text style={tw`text-center text-white text-base`}>
-                  {selected?.status
-                    ? "Accept Order"
-                    : "Closed"}
-                </Text>
-              </TouchableOpacity>
-              {selected?.status === "open" &&(
-                <TouchableOpacity
-                onPress={handleCloseOrder}
-                style={[
-                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
-                  {
-                    backgroundColor: "#DC2626"
+                      selected?.status === "open" ? "#84CC16" : "#DC2626",
                   },
                 ]}
               >
                 <Text style={tw`text-center text-white text-base`}>
-                  Cancel Order
+                  {selected?.status ? "Accept Order" : "Closed"}
                 </Text>
               </TouchableOpacity>
+              {selected?.status === "open" && (
+                <TouchableOpacity
+                  onPress={handleCloseOrder}
+                  style={[
+                    tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                    {
+                      backgroundColor: "#DC2626",
+                    },
+                  ]}
+                >
+                  <Text style={tw`text-center text-white text-base`}>
+                    Cancel Order
+                  </Text>
+                </TouchableOpacity>
               )}
             </ScrollView>
           </View>
@@ -186,13 +215,13 @@ const EatsScreen = () => {
             <TouchableOpacity
               style={tw`p-2 pb-6 pt-4 bg-gray-200 mr-4 mb-6 ml-4 rounded-lg`}
               onPress={() => {
-                console.log("Clicked !!");
+                console.log("Clicked !!", item);
                 setSelected(item);
                 // setModalVisible(!isModalVisible);
               }}
             >
               <View style={tw`flex flex-row`}>
-                <View style={{ width: "14%", paddingTop: 5, }}>
+                <View style={{ width: "14%", paddingTop: 5 }}>
                   <MaterialCommunityIcons
                     name="ray-start-arrow"
                     size={42}
@@ -241,8 +270,10 @@ const EatsScreen = () => {
               </View>
               <View>
                 {item.createdAt && (
-                  <Text style={tw`text-gray-600 text-xs text-right pr-2`} >{moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}</Text>
-                  )}
+                  <Text style={tw`text-gray-600 text-xs text-right pr-2`}>
+                    {moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}
+                  </Text>
+                )}
               </View>
             </TouchableOpacity>
           )}

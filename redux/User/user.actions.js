@@ -70,12 +70,15 @@ export const signInUser =
           );
           const qquerySnapshot = await getDocs(qq);
           qquerySnapshot.forEach((doc) => {
-            console.log("User is: ", doc.data());
             dispatch({
               type: userTypes.USER_SIGN_IN_SUCCESS,
               payload: doc.data(),
             });
           });
+          // dispatch({
+          //   type: userTypes.USER_SIGN_IN_SUCCESS,
+          //   payload: true,
+          // });
         })
         .catch((err) => {
           console.log(err);
@@ -96,22 +99,44 @@ export const signInUser =
   };
 // done
 const manageUsers = async (userDetails, firstName, email, password, type) => {
-  const newUserRef = doc(collection(db, "users"));
-  await setDoc(newUserRef, {
-    id: userDetails.user.uid,
-    type: type,
-    name: firstName,
-    avatar:
-      userDetails.user.photoURL ||
-      "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-    email: email,
-    phone: null,
-    password: password,
-    createdAt: new Date(),
-    updatedAt: null,
-    deletedAt: null,
-    chats: [],
-  });
+  if (type === "0") {
+    const newUserRef = doc(collection(db, "users"));
+    await setDoc(newUserRef, {
+      id: userDetails.user.uid,
+      type: type,
+      name: firstName,
+      avatar:
+        userDetails.user.photoURL ||
+        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+      email: email,
+      phone: null,
+      password: password,
+      createdAt: new Date(),
+      updatedAt: null,
+      deletedAt: null,
+      chats: [],
+    });
+  } else {
+    const newUserRef = doc(collection(db, "users"));
+    await setDoc(newUserRef, {
+      id: userDetails.user.uid,
+      type: type,
+      name: firstName,
+      avatar:
+        userDetails.user.photoURL ||
+        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+      email: email,
+      phone: null,
+      password: password,
+      createdAt: new Date(),
+      updatedAt: null,
+      deletedAt: null,
+      chats: [],
+      driverPhoto: "",
+      driverLicense: "",
+      carLicensePlate: "",
+    });
+  }
 };
 export const signUpUser =
   ({ firstName, email, password, type }) =>
@@ -156,33 +181,22 @@ export const signUpUser =
     }
   };
 
-// PROPERTY
-export const fetchUser = () => async (dispatch) => {
+// User
+export const setUserD = (user, userDocId) => async (dispatch) => {
   try {
-    console.log("From fetchContact Action");
-    const { IDFound, currentID } = await isPropertyIdFound();
-    console.log("HERE FROM isPropertyIdFound()........................");
-    console.log({ IDFound, currentID });
-    if (IDFound) {
-      const contactsListRef = firestore().doc(`property/${currentID}`);
-      const contactsList = await contactsListRef.get();
-      const contactsArray = contactsList.data();
-      dispatch({
-        type: userTypes.FETCH_PROPERTY,
-        payload: contactsArray,
-      });
-    } else {
-      const error = "Something Went Wrong !!";
-      dispatch({
-        type: userTypes.SET_ERRORS,
-        payload: error,
-      });
-    }
+    dispatch({
+      type: userTypes.SET_USER,
+      payload: user,
+    });
+    dispatch({
+      type: userTypes.SET_USER_DOC_ID,
+      payload: userDocId,
+    });
   } catch (err) {
-    console.log("error from fetchPrperty catch !!");
-    console.log(err);
+    console.log("setUser action catch: ", err);
   }
 };
+
 // OTHERS
 export const resetAllAuthForms = () => ({
   type: userTypes.RESET_AUTH_FORMS,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 import Screen from "../components/Screen";
 import tw from "tailwind-react-native-classnames";
@@ -11,15 +11,37 @@ import NavFavourites from "../components/NavFavourites";
 import Constants from "expo-constants";
 import { Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
+import { auth, db } from "../../firebase/utils";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { setUserD } from "../../redux/User/user.actions";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
+  userDocId: user.userDocId,
 });
 
 const HomeScreen = () => {
-  const { userD } = useSelector(mapState);
+  const { userD, userDocId } = useSelector(mapState);
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const q = query(
+      collection(db, "users"),
+      where("id", "==", auth.currentUser.uid)
+    );
+    const querySnapshot = onSnapshot(q, (snapshot) => {
+      snapshot.docs.map((doc) => {
+        dispatch(setUserD(doc.data(), doc.id));
+      });
+    });
+    return () => {
+      querySnapshot();
+    };
+  }, []);
+
+
   return (
     <Screen style={tw`bg-white h-full`}>
       <TouchableOpacity
@@ -37,6 +59,7 @@ const HomeScreen = () => {
         <Image
           source={{ uri: userD.avatar }}
           style={{ width: 38, height: 38, borderRadius: 20 }}
+          resizeMode="cover"
         />
       </TouchableOpacity>
       <View style={tw`p-5`}>

@@ -41,6 +41,10 @@ const RegisterDriver = ({ navigation }) => {
   const [emailErrors, setEmailErrors] = useState("");
   const [passwordErrors, setPasswordErrors] = useState("");
   const [termsErrors, setTermsErrors] = useState("");
+  const [currentErrors, setCurrentErrors] = useState(errors);
+  useEffect(() => {
+    ResetForm();
+  }, []);
 
   const ResetForm = () => {
     onChangefirstName("");
@@ -50,6 +54,7 @@ const RegisterDriver = ({ navigation }) => {
     setIconPasswordName("eye");
     setSelected(false);
     setError([]);
+    setCurrentErrors("");
   };
 
   const handlePasswordSecure = () => {
@@ -194,7 +199,7 @@ const RegisterDriver = ({ navigation }) => {
               )}
             </View>
             <Text style={[styles.fieldErrors, { marginTop: 10 }]}>
-              {errors}
+              {currentErrors}
             </Text>
             <View style={styles.login}>
               <Text style={(styles.loginText, { color: COLORS.grey })}>

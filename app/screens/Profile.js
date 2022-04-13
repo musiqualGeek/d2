@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Image,
   ScrollView,
@@ -8,9 +8,6 @@ import {
   View,
 } from "react-native";
 import {
-  Foundation,
-  MaterialCommunityIcons,
-  MaterialIcons,
   FontAwesome5,
   Ionicons,
   Octicons,
@@ -19,14 +16,6 @@ import {
 import { COLORS } from "../../constants";
 import { signOutUser } from "../../redux/User/user.actions";
 import { useSelector, useDispatch } from "react-redux";
-import { auth, db } from "../../firebase/utils";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  onSnapshot,
-} from "firebase/firestore";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
