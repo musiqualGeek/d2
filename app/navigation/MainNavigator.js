@@ -16,6 +16,7 @@ import LoginDriver from "../screens/Auth/LooginDriver";
 import Profile from "../screens/Profile";
 import ProfileDriver from "../screens/ProfileDriver";
 import MyOrders from "../screens/MyOrders";
+import MyDelivery from "../screens/MyDelivery";
 import EditProfileDriver from "../screens/EditProfileDriver";
 import EditProfile from "../screens/EditProfile";
 // Driver Paper
@@ -60,6 +61,7 @@ const MainNavigator = () => {
           <Stack.Screen name="profile" component={Profile} />
           <Stack.Screen name="editProfile" component={EditProfile} />
           <Stack.Screen name="myOrders" component={MyOrders} />
+          <Stack.Screen name="myDelivery" component={MyDelivery} />
         </>
       )}
       {currentProperty && userD?.type == "1" && (

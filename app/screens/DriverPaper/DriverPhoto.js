@@ -15,6 +15,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as DocumentPicker from "expo-document-picker";
 import uuid from "react-native-uuid";
 import { useSelector } from "react-redux";
+import  BackBtn  from "../Modal/BackBtn";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -63,7 +64,9 @@ const DriverPhoto = ({ navigation }) => {
   };
   const handleChangePicture = async () => {
     let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
-    setAvatar(result.uri);
+    if (result.type.toLowerCase() !== 'cancel') {
+      setAvatar(result.uri);
+    }
   };
   const handleSubmit = async () => {
     if (avatar.length !== 0 || firstName !== userD?.name) {
@@ -75,6 +78,7 @@ const DriverPhoto = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <BackBtn navigation={navigation} />
       <ScrollView style={styles.scrollView}>
         <Text style={styles.title}>Driver Photo</Text>
         {/* Profile Picture */}

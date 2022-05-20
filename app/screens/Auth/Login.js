@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { images, COLORS } from "../../../constants";
 import { Ionicons, Entypo } from "@expo/vector-icons";
@@ -34,6 +35,7 @@ const Login = ({ navigation }) => {
   const [emailErrors, setEmailErrors] = useState("");
   const [passwordErrors, setPasswordErrors] = useState("");
   const [currentErrors, setCurrentErrors] = useState(errors);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     ResetForm();
@@ -63,6 +65,7 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     var checking_form = "true";
+    setLoading(true);
     if (email.length === 0 || email.indexOf("@") === -1) {
       setEmailErrors("* Email Field Required");
       checking_form = "false";
@@ -141,7 +144,13 @@ const Login = ({ navigation }) => {
               </View>
               {email && password ? (
                 <TouchableOpacity style={styles.pinkBtn} onPress={handleLogin}>
-                  <Text style={styles.textBtn}>Sign In</Text>
+                  {loading ? (
+                    <View style={styles.loading}>
+                      <ActivityIndicator size="small" color="#ffffff" />
+                    </View>
+                  ) : (
+                    <Text style={styles.textBtn}>Sign In</Text>
+                  )}
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity style={styles.disabledBtn}>
@@ -300,5 +309,8 @@ const styles = StyleSheet.create({
     right: 20,
     top: 12,
     fontSize: 22,
+  },
+  loading: {
+    paddingTop: 20,
   },
 });

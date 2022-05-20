@@ -24,9 +24,7 @@ const Recovery = ({ navigation }) => {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    if (propertyRecoverySuccess) {
-      navigation.navigate("splash");
-    }
+    if (propertyRecoverySuccess) navigation.navigate("splash");
   }, [propertyRecoverySuccess]);
 
   const handleRecovery = () => {
@@ -38,13 +36,13 @@ const Recovery = ({ navigation }) => {
       {/* Section 1 */}
       <ScrollView
         contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "space-between",
-            flexDirection: "column",
-          }}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          style={{ paddingBottom: 20 }}
+          flexGrow: 1,
+          justifyContent: "space-between",
+          flexDirection: "column",
+        }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={{ paddingBottom: 20 }}
       >
         <View></View>
         <View style={styles.loginContainer}>

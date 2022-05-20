@@ -45,13 +45,14 @@ const mapState = ({ data, user }) => ({
   destination: data.destination,
   travelTime: data.travelTime,
   userD: user.userD,
+  userDocId: user.userDocId,
 });
 
 const RideOptionsCard = () => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
-  const { origin, destination, travelTime, userD } = useSelector(mapState);
-  console.log({ origin, destination, travelTime });
+  const { origin, destination, travelTime, userD, userDocId } =
+    useSelector(mapState);
 
   useEffect(() => {
     if (!origin || !destination) navigation.push("NavigateCard");
@@ -67,7 +68,8 @@ const RideOptionsCard = () => {
   const onChoose = async () => {
     await addDoc(collection(db, "orders"), {
       id: uuid.v4(),
-      user: userD.id,
+      userPassenger: userDocId,
+      userDriver: "",
       destination: destination,
       origin: origin,
       car: selected.title,
@@ -75,8 +77,10 @@ const RideOptionsCard = () => {
       distance: travelTime?.distance?.text,
       travelTime: travelTime?.duration?.text,
       status: "open",
+      tripProgress: "",
       createdAt: new Date(),
       closedAt: null,
+
     });
     Alert.alert(
       "configurations!!!",

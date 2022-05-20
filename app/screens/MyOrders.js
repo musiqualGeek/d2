@@ -17,23 +17,37 @@ import Constants from "expo-constants";
 import { useNavigation } from "@react-navigation/native";
 import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  getDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../firebase/utils";
 import { icons } from "../../constants";
-import moment from 'moment';
+import moment from "moment";
+import BackBtn from "./Modal/BackBtn";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
+  userDocId: user.userDocId,
 });
 
 const MyOrders = () => {
-  const { userD } = useSelector(mapState);
+  console.log("here MyOrders");
+  const { userD, userDocId } = useSelector(mapState);
   const navigation = useNavigation();
   const [orders, setOrders] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [driverData, setDriverData] = useState(null);
 
   useEffect(() => {
-    const q = query(collection(db, "orders"), where("user", "==", userD.id));
+    const q = query(
+      collection(db, "orders"),
+      where("userPassenger", "==", userDocId)
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const ordersT = [];
       querySnapshot.forEach((doc) => {
@@ -49,19 +63,31 @@ const MyOrders = () => {
   useEffect(() => {
     console.log("userD => ", userD);
     console.log("Orders => ", orders);
-  }, [orders]);
+    console.log("driverrrrrrrrrrrrrrr => ", driverData);
+  }, [orders, driverData]);
   const handleCloseOrder = (id) => {
     const q = query(collection(db, "orders"), where("id", "==", id));
   };
+
+  const logicRenderModel = async () => {
+    if (selected?.userDriver?.length > 0) {
+      const ref = doc(db, "users", selected.userDriver);
+      const docSnap = await getDoc(ref);
+      if (docSnap.exists()) {
+        setDriverData(docSnap.data());
+        // driverData = docSnap.data();
+      } else {
+        console.log("No such document!");
+      }
+    }
+  };
+
   const renderModel = () => {
     return (
       <Modal
         isVisible={selected ? true : false}
         backdropOpacity={0.5}
-        // onBackdropPress={() => setModalVisible(false)}
         onBackdropPress={() => setSelected(null)}
-        // swipeDirection={["down"]}
-        // scrollOffsetMax={400 - 300} // content height - ScrollView height
         propagateSwipe={true}
         style={styles.modal}
       >
@@ -69,7 +95,7 @@ const MyOrders = () => {
           <View style={styles.modelStyle}>
             <Image
               source={{ uri: userD.avatar }}
-              style={[tw`shadow-lg`, styles.avatar]}
+              style={[styles.avatar]}
               resizeMode="cover"
             />
             <ScrollView
@@ -115,38 +141,42 @@ const MyOrders = () => {
                   {selected.destination.description}
                 </Text>
               </View>
-              <View
-                style={[
-                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
-                  {
-                    backgroundColor:
-                      selected?.status === "open"
-                        ? "#84CC16"
-                        : "#DC2626",
-                  },
-                ]}
-              >
-                <Text style={tw`text-center text-white text-base`}>
-                  {selected?.status
-                    ? "Waiting For Driver To Accept..."
-                    : "Closed"}
-                </Text>
-              </View>
-              {selected?.status === "open" &&(
-
+              {!selected?.status ? (
+                <View
+                  style={[
+                    tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                    {
+                      backgroundColor: "#84CC16",
+                    },
+                  ]}
+                >
+                  <Text style={tw`text-center text-white text-base`}>
+                    Waiting For Driver To Accept...
+                  </Text>
+                </View>
+              ) : (
+                <View style={{ flex: 1 }}>
+                  <Image
+                    source={{ uri: driverData?.driverPhoto }}
+                    style={[styles.imgStyle]}
+                    resizeMode="cover"
+                  />
+                </View>
+              )}
+              {selected?.status === "open" && (
                 <TouchableOpacity
-                onPress={handleCloseOrder}
-                style={[
-                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
-                  {
-                    backgroundColor: "#DC2626"
-                  },
-                ]}
-              >
-                <Text style={tw`text-center text-white text-base`}>
-                  Close Order
-                </Text>
-              </TouchableOpacity>
+                  onPress={handleCloseOrder}
+                  style={[
+                    tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                    {
+                      backgroundColor: "#DC2626",
+                    },
+                  ]}
+                >
+                  <Text style={tw`text-center text-white text-base`}>
+                    Close Order
+                  </Text>
+                </TouchableOpacity>
               )}
             </ScrollView>
           </View>
@@ -156,6 +186,7 @@ const MyOrders = () => {
   };
   return (
     <Screen style={tw`bg-white h-full`}>
+      <BackBtn navigation={navigation} />
       <TouchableOpacity
         style={[
           tw`bg-white p-0 rounded-full shadow-lg`,
@@ -177,7 +208,7 @@ const MyOrders = () => {
       <View style={tw`p-5`}>
         <Text style={styles.title2}>Your Orders</Text>
       </View>
-      {orders ? (
+      {orders?.length > 0 ? (
         <FlatList
           data={orders}
           renderItem={({ item }) => (
@@ -190,7 +221,7 @@ const MyOrders = () => {
               }}
             >
               <View style={tw`flex flex-row`}>
-                <View style={{ width: "14%", paddingTop: 5, }}>
+                <View style={{ width: "14%", paddingTop: 5 }}>
                   <MaterialCommunityIcons
                     name="ray-start-arrow"
                     size={42}
@@ -232,15 +263,17 @@ const MyOrders = () => {
                     style={styles.icon}
                   />
                   <Text style={{ fontSize: 10 }}>
-                    {item?.status === "op en" ? "Open" : "Closed"}
+                    {item?.status === "open" ? "Open" : "Closed"}
                   </Text>
                   <Text></Text>
                 </View>
               </View>
               <View>
                 {item.createdAt && (
-                  <Text style={tw`text-gray-600 text-xs text-right pr-2`} >{moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}</Text>
-                  )}
+                  <Text style={tw`text-gray-600 text-xs text-right pr-2`}>
+                    {moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}
+                  </Text>
+                )}
               </View>
             </TouchableOpacity>
           )}
@@ -254,7 +287,7 @@ const MyOrders = () => {
           </Text>
         </View>
       )}
-      {renderModel()}
+      {selected && renderModel()}
     </Screen>
   );
 };
@@ -269,9 +302,9 @@ const styles = StyleSheet.create({
   },
   noChat: {
     flex: 1,
-    justifyContent: "center",
+    // justifyContent: "center",
     alignItems: "center",
-    marginTop: "10%",
+    marginTop: "2%",
   },
   noChatText1: {
     textAlign: "center",
@@ -290,7 +323,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "90deg" }],
   },
   modelStyle: {
-    flex: 0.55,
+    flex: 0.8,
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -317,6 +350,10 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width / 4,
     height: Dimensions.get("window").width / 4,
     borderRadius: 50,
+  },
+  imgStyle: {
+    width: 40,
+    height: 40,
   },
   icon: {
     width: 20,

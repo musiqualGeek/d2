@@ -1,22 +1,22 @@
-import React from 'react';
+import React from "react";
 import { store } from "./redux/createStore";
 import { Provider } from "react-redux";
-import AppNavigator from './app/navigation/AppNavigator';
-import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { KeyboardAvoidingView, Platform } from 'react-native'; 
+import AppNavigator from "./app/navigation/AppNavigator";
+import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from "react-native";
 
 export default function App() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style={{ flex: 1 }}>
       <Provider store={store}>
-        <KeyboardAvoidingView 
+        <StatusBar  />
+        <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? -64 : 0}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
         >
           <AppNavigator />
         </KeyboardAvoidingView>
       </Provider>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }

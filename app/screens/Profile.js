@@ -16,6 +16,7 @@ import {
 import { COLORS } from "../../constants";
 import { signOutUser } from "../../redux/User/user.actions";
 import { useSelector, useDispatch } from "react-redux";
+import BackBtn from "./Modal/BackBtn";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -30,6 +31,7 @@ const Profile = ({ navigation }) => {
   };
   return (
     <View>
+      <BackBtn navigation={navigation} />
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.leftHeader}>
@@ -146,7 +148,8 @@ const styles = StyleSheet.create({
   // Header Top
   headerTop: {
     backgroundColor: "white",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     flexDirection: "row",
     alignItems: "center",
   },

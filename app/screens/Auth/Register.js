@@ -107,115 +107,108 @@ const Register = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.OContainer}>
-        <View style={styles.contectContainer}>
-          <View>
-            <TouchableOpacity
-              style={styles.backBtn}
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="chevron-back" size={30} color="black" />
-            </TouchableOpacity>
-            <View style={styles.SubloginContainer}>
-              <Text style={styles.title3}>
-                Register with{"\n"}Email address
-              </Text>
-              <Text style={styles.title32}>As A Passenger</Text>
-            </View>
-          </View>
-          <View style={styles.phoneStyle}>
-            {/* Full Name */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangefirstName}
-                value={firstName}
-                placeholder="Full Name"
-                placeholderTextColor={"grey"}
-              />
-              <Text style={styles.fieldErrors}>{firstNameErrors}</Text>
-            </View>
-            {/* Email */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email Adress</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeEmail}
-                value={email}
-                placeholder="Email"
-                placeholderTextColor={"grey"}
-              />
-              <Text style={styles.fieldErrors}>{emailErrors}</Text>
-            </View>
-            {/* Password */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.passwordField}>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={onChangepassword}
-                  value={password}
-                  secureTextEntry={isSecure}
-                  placeholder="Password"
-                  placeholderTextColor={"grey"}
-                />
-                <Entypo
-                  style={styles.eyeIcon}
-                  name={iconPasswordName}
-                  size={25}
-                  color={COLORS.main}
-                  onPress={handlePasswordSecure}
-                />
-              </View>
-              <Text style={styles.fieldErrors}>{passwordErrors}</Text>
-            </View>
-            {/* Terms and Condition */}
-            <View style={styles.inputContainer}>
-              <View style={styles.terms}>
-                <Checkbox
-                  value={isSelected}
-                  onValueChange={setSelected}
-                  style={styles.checkbox}
-                  color={setSelected ? COLORS.pink : undefined}
-                />
-                <Text style={styles.privacy}>
-                  I agree with the privacy policies.
-                </Text>
-              </View>
-            </View>
-            <View style={styles.inputContainer}>
-              {firstName && email && password && isSelected ? (
-                <TouchableOpacity
-                  style={styles.pinkBtn}
-                  onPress={handleRegister}
-                >
-                  <Text style={styles.textBtn}>Register</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity style={styles.disabledBtn}>
-                  <Text style={styles.textBtn}>Register</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-            <Text style={[styles.fieldErrors, { marginTop: 10 }]}>
-              {currentErrors}
-            </Text>
-            <View style={styles.login}>
-              <Text style={(styles.loginText, { color: COLORS.grey })}>
-                Already have an account?{" "}
-              </Text>
-              <TouchableOpacity onPress={() => navigation.navigate("login")}>
-                <Text style={(styles.loginText, { color: COLORS.pink })}>
-                  sign in
-                </Text>
-              </TouchableOpacity>
-            </View>
+    <ScrollView style={styles.OContainer}>
+      <View style={styles.contectContainer}>
+        <View>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="chevron-back" size={30} color="black" />
+          </TouchableOpacity>
+          <View style={styles.SubloginContainer}>
+            <Text style={styles.title3}>Register with{"\n"}Email address</Text>
+            <Text style={styles.title32}>As A Passenger</Text>
           </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        <View style={styles.phoneStyle}>
+          {/* Full Name */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Full Name</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangefirstName}
+              value={firstName}
+              placeholder="Full Name"
+              placeholderTextColor={"grey"}
+            />
+            <Text style={styles.fieldErrors}>{firstNameErrors}</Text>
+          </View>
+          {/* Email */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email Adress</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeEmail}
+              value={email}
+              placeholder="Email"
+              placeholderTextColor={"grey"}
+            />
+            <Text style={styles.fieldErrors}>{emailErrors}</Text>
+          </View>
+          {/* Password */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Password</Text>
+            <View style={styles.passwordField}>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangepassword}
+                value={password}
+                secureTextEntry={isSecure}
+                placeholder="Password"
+                placeholderTextColor={"grey"}
+              />
+              <Entypo
+                style={styles.eyeIcon}
+                name={iconPasswordName}
+                size={25}
+                color={COLORS.main}
+                onPress={handlePasswordSecure}
+              />
+            </View>
+            <Text style={styles.fieldErrors}>{passwordErrors}</Text>
+          </View>
+          {/* Terms and Condition */}
+          <View style={styles.inputContainer}>
+            <View style={styles.terms}>
+              <Checkbox
+                value={isSelected}
+                onValueChange={setSelected}
+                style={styles.checkbox}
+                color={setSelected ? COLORS.pink : undefined}
+              />
+              <Text style={styles.privacy}>
+                I agree with the privacy policies.
+              </Text>
+            </View>
+          </View>
+          <View style={styles.inputContainer}>
+            {firstName && email && password && isSelected ? (
+              <TouchableOpacity style={styles.pinkBtn} onPress={handleRegister}>
+                <Text style={styles.textBtn}>Register</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.disabledBtn}>
+                <Text style={styles.textBtn}>Register</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <Text style={[styles.fieldErrors, { marginTop: 10 }]}>
+            {currentErrors}
+          </Text>
+          <View style={styles.login}>
+            <Text style={(styles.loginText, { color: COLORS.grey })}>
+              Already have an account?{" "}
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate("login")}>
+              <Text style={(styles.loginText, { color: COLORS.pink })}>
+                sign in
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 

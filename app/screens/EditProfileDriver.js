@@ -15,6 +15,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as DocumentPicker from "expo-document-picker";
 import uuid from "react-native-uuid";
 import { useSelector } from "react-redux";
+import BackBtn from "./Modal/BackBtn";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -25,6 +26,7 @@ const EditProfileDriver = ({ navigation }) => {
   const { userD, userDocId } = useSelector(mapState);
   const [avatar, setAvatar] = useState(userD?.avatar);
   const [firstName, setFirstName] = useState(userD?.name);
+  const [phone, setPhone] = useState(userD?.phone);
 
   const updateAvatarUser = async (downloadURL) => {
     const userRef = doc(db, "users", userDocId);
@@ -72,7 +74,9 @@ const EditProfileDriver = ({ navigation }) => {
   };
   const handleChangePicture = async () => {
     let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
-    setAvatar(result.uri);
+    if (result.type.toLowerCase() !== 'cancel') {
+      setAvatar(result.uri);
+    }
   };
   const handleSubmit = async () => {
     if (avatar.length !== 0 || firstName !== userD?.name) {
@@ -84,6 +88,7 @@ const EditProfileDriver = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <BackBtn navigation={navigation} />
       <ScrollView style={styles.scrollView}>
         {/* Profile Picture */}
         <View style={styles.pictureContainer}>
@@ -117,7 +122,11 @@ const EditProfileDriver = ({ navigation }) => {
           <View style={styles.detailsContainer}>
             <View style={[styles.searchContainer, styles.shadow]}>
               <Text style={styles.title4}>Email</Text>
-              <TextInput style={styles.searchInput} value={userD?.email} />
+              <TextInput
+                style={styles.searchInput}
+                editable={false}
+                value={userD?.email}
+              />
             </View>
           </View>
           {/* Email */}
@@ -126,7 +135,9 @@ const EditProfileDriver = ({ navigation }) => {
               <Text style={styles.title4}>Phone Number</Text>
               <TextInput
                 style={styles.searchInput}
-                value={userD?.phone || "No phone Number connected."}
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="numeric"
               />
             </View>
           </View>
@@ -197,6 +208,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     fontSize: 18,
+    color: "#000",
   },
   shadow: {
     shadowColor: "#cdcddd",

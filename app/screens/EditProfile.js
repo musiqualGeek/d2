@@ -8,6 +8,7 @@ import {
   Image,
   TextInput,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../constants";
 import { storage, db } from "../../firebase/utils";
 import { doc, updateDoc } from "firebase/firestore";
@@ -15,6 +16,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as DocumentPicker from "expo-document-picker";
 import uuid from "react-native-uuid";
 import { useSelector } from "react-redux";
+import BackBtn from "./Modal/BackBtn";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -84,6 +86,7 @@ const EditProfile = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <BackBtn navigation={navigation} />
       <ScrollView style={styles.scrollView}>
         {/* Profile Picture */}
         <View style={styles.pictureContainer}>

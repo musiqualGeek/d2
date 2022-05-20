@@ -4,6 +4,7 @@ const reload = require("../assets/icons/refresh.png");
 const i0 = require("../assets/icons/i0.png");
 const i1 = require("../assets/icons/i1.png");
 const i2 = require("../assets/icons/i2.png");
+const send = require("../assets/icons/send.png");
 export default {
   valid,
   notValid,
@@ -11,4 +12,5 @@ export default {
   i0,
   i1,
   i2,
+  send,
 };

@@ -8,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  TextInput,
 } from "react-native";
 import tw from "tailwind-react-native-classnames";
 import Screen from "../components/Screen";
@@ -20,7 +21,14 @@ import moment from "moment";
 import Modal from "react-native-modal";
 import * as WebBrowser from "expo-web-browser";
 import { auth, db } from "../../firebase/utils";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { setUserD } from "../../redux/User/user.actions";
 
 const mapState = ({ user }) => ({
@@ -34,13 +42,15 @@ const EatsScreen = () => {
   const [orders, setOrders] = useState(null);
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
+  const [selectedDocId, setSelectedDocId] = useState(null);
+  const [rtTripProgress, setRtTripProgress] = useState("");
 
   useEffect(() => {
     const q = query(collection(db, "orders"), where("closedAt", "==", null));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const ordersT = [];
       querySnapshot.forEach((doc) => {
-        ordersT.push(doc.data());
+        ordersT.push({ data: doc.data(), id: doc.id });
       });
       setOrders(ordersT);
     });
@@ -83,15 +93,32 @@ const EatsScreen = () => {
       `https://www.google.com/maps/dir/?api=1&origin&destination=${item.lat.toString()}%2C${item.lng.toString()}&travelmode=driving`
     );
   };
+  const handleShareTripProgress = async () => {
+    console.log("id doc =>", selectedDocId);
+    const userRef = doc(db, "orders", selectedDocId);
+    let rtTripProgress2 = rtTripProgress.substr(
+      rtTripProgress.indexOf("https"),
+      rtTripProgress.length - rtTripProgress.indexOf("https") + 1
+    );
+    await updateDoc(userRef, {
+      tripProgress: rtTripProgress2,
+      userDriver: userDocId,
+      updatedAt: new Date(),
+    })
+      .then(() => {
+        console.log("rtTripProgress Updated !!");
+      })
+      .catch((err) => {
+        console.log("error => handleShareTripProgress");
+        console.error(err);
+      });
+  };
   const renderModel = () => {
     return (
       <Modal
         isVisible={selected ? true : false}
         backdropOpacity={0.5}
-        // onBackdropPress={() => setModalVisible(false)}
         onBackdropPress={() => setSelected(null)}
-        // swipeDirection={["down"]}
-        // scrollOffsetMax={400 - 300} // content height - ScrollView height
         propagateSwipe={true}
         style={styles.modal}
       >
@@ -99,7 +126,7 @@ const EatsScreen = () => {
           <View style={styles.modelStyle}>
             <Image
               source={{ uri: userD.avatar }}
-              style={[tw`shadow-lg`, styles.avatar]}
+              style={[styles.avatar]}
               resizeMode="cover"
             />
             <ScrollView
@@ -145,12 +172,59 @@ const EatsScreen = () => {
                   {selected.destination.description}
                 </Text>
               </View>
+              <View
+                style={tw`relative p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
+              >
+                <TextInput
+                  style={tw`pr-8`}
+                  value={
+                    rtTripProgress.length > 0
+                      ? selected.tripProgress
+                      : rtTripProgress
+                  }
+                  onChangeText={setRtTripProgress}
+                  placeholder="Paste Real Time Trip Progress Here ..."
+                  placeholderTextColor={"grey"}
+                />
+                <TouchableOpacity
+                  style={tw`absolute right-4 top-6`}
+                  onPress={handleShareTripProgress}
+                >
+                  <Image
+                    style={[
+                      styles.sendIcon,
+                      rtTripProgress.length > 0
+                        ? { tintColor: "#84CC16" }
+                        : { tintColor: "black" },
+                    ]}
+                    source={icons.send}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={tw`p-2 pl-4`}>
+                Before Starting the drive please share the trip progress with
+                the passenger
+              </Text>
               <TouchableOpacity
                 onPress={() => {
-                  console.log(
-                    "YOYOYOYOYOYOY => ",
-                    selected.destination.loaction
-                  );
+                  handleRoute(selected.destination.loaction);
+                }}
+                style={[
+                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                  {
+                    backgroundColor:
+                      selected?.status === "open" ? "#84CC16" : "#DC2626",
+                  },
+                ]}
+              >
+                <Text style={tw`text-center text-white text-base`}>
+                  {selected?.status ? "Share trip progress" : "Closed"}
+                </Text>
+              </TouchableOpacity>
+              <Text style={tw`p-2 pl-4`}>Then you can start Driving ahead</Text>
+              <TouchableOpacity
+                onPress={() => {
                   handleRoute(selected.destination.loaction);
                 }}
                 style={[
@@ -215,9 +289,8 @@ const EatsScreen = () => {
             <TouchableOpacity
               style={tw`p-2 pb-6 pt-4 bg-gray-200 mr-4 mb-6 ml-4 rounded-lg`}
               onPress={() => {
-                console.log("Clicked !!", item);
-                setSelected(item);
-                // setModalVisible(!isModalVisible);
+                setSelected(item.data);
+                setSelectedDocId(item.id);
               }}
             >
               <View style={tw`flex flex-row`}>
@@ -233,18 +306,19 @@ const EatsScreen = () => {
                   <View style={tw`flex flex-row mb-3`}>
                     <Text style={tw`text-xs w-10`}>From</Text>
                     <Text style={tw`text-xs font-bold`}>
-                      {item.origin.description.length > 35
-                        ? item.origin.description.substr(0, 35) + "..."
-                        : item.origin.description}
+                      {item.data.origin.description.length > 35
+                        ? item.data.origin.description.substr(0, 35) + "..."
+                        : item.data.origin.description}
                     </Text>
                   </View>
                   <View></View>
                   <View style={tw`flex flex-row`}>
                     <Text style={tw`text-xs w-10`}>To</Text>
                     <Text style={tw`text-xs font-bold`}>
-                      {item.destination.description.length > 35
-                        ? item.destination.description.substr(0, 35) + "..."
-                        : item.destination.description}
+                      {item.data.destination.description.length > 35
+                        ? item.data.destination.description.substr(0, 35) +
+                          "..."
+                        : item.data.destination.description}
                     </Text>
                   </View>
                 </View>
@@ -258,26 +332,28 @@ const EatsScreen = () => {
                 >
                   <Image
                     source={
-                      item?.status === "open" ? icons.valid : icons.notValid
+                      item.data?.status === "open"
+                        ? icons.valid
+                        : icons.notValid
                     }
                     style={styles.icon}
                   />
                   <Text style={{ fontSize: 10 }}>
-                    {item?.status === "op en" ? "Open" : "Closed"}
+                    {item.data?.status === "Open" ? "Open" : "Closed"}
                   </Text>
                   <Text></Text>
                 </View>
               </View>
               <View>
-                {item.createdAt && (
+                {item.data.createdAt && (
                   <Text style={tw`text-gray-600 text-xs text-right pr-2`}>
-                    {moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}
+                    {moment(item.data.createdAt.toDate(), "YYYYMMDD").fromNow()}
                   </Text>
                 )}
               </View>
             </TouchableOpacity>
           )}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.data.id.toString()}
         />
       ) : (
         <View style={styles.noChat}>
@@ -323,7 +399,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "90deg" }],
   },
   modelStyle: {
-    flex: 0.55,
+    flex: 0.8,
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -350,8 +426,13 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width / 4,
     height: Dimensions.get("window").width / 4,
     borderRadius: 50,
+    zIndex: 10,
   },
   icon: {
+    width: 20,
+    height: 20,
+  },
+  sendIcon: {
     width: 20,
     height: 20,
   },
