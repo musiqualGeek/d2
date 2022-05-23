@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
@@ -12,9 +11,8 @@ const mapState = ({ data }) => ({
   origin: data.origin,
 });
 
-const MapScreen = () => {
+const MapScreen = ({ navigation }) => {
   const { origin } = useSelector(mapState);
-  const navigation = useNavigation();
 
   useEffect(() => {
     if (!origin) navigation.replace("Home");

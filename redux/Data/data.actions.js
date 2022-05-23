@@ -30,3 +30,13 @@ export const setTravelTime = (travelTime) => async (dispatch) => {
     console.log("Error setTravelTime", err);
   }
 };
+export const setKind = (kind) => async (dispatch) => {
+  try {
+    dispatch({
+      type: dataTypes.SET_KIND,
+      payload: kind,
+    });
+  } catch (err) {
+    console.log("Error setKind", err);
+  }
+};

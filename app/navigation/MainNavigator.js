@@ -19,10 +19,12 @@ import MyOrders from "../screens/MyOrders";
 import MyDelivery from "../screens/MyDelivery";
 import EditProfileDriver from "../screens/EditProfileDriver";
 import EditProfile from "../screens/EditProfile";
+import StartScreen from "../screens/StartScreen";
 // Driver Paper
 import CarLicensePlate from "../screens/DriverPaper/CarLicensePlate";
 import DriverLicense from "../screens/DriverPaper/DriverLicense";
 import DriverPhoto from "../screens/DriverPaper/DriverPhoto";
+import ReadyScreen from "../screens/ReadyScreen";
 
 const Stack = createStackNavigator();
 
@@ -60,6 +62,8 @@ const MainNavigator = () => {
           <Stack.Screen name="MapScreen" component={MapScreen} />
           <Stack.Screen name="profile" component={Profile} />
           <Stack.Screen name="editProfile" component={EditProfile} />
+          <Stack.Screen name="startScreen" component={StartScreen} />
+          <Stack.Screen name="readyScreen" component={ReadyScreen} />
           <Stack.Screen name="myOrders" component={MyOrders} />
           <Stack.Screen name="myDelivery" component={MyDelivery} />
         </>

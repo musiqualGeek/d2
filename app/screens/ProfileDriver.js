@@ -53,7 +53,7 @@ const ProfileDriver = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <ScrollView style={{ backgroundColor: "#f7f8fa" }}>
+      <ScrollView style={{ flex: 1, backgroundColor: "#f7f8fa" }}>
         <View style={styles.content}>
           <View style={styles.content2}>
             <TouchableOpacity

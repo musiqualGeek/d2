@@ -20,17 +20,18 @@ const data = [
     screen: "MapScreen",
   },
   {
-      id: '4354',
-      title: 'My Rides',
-      image: 'https://firebasestorage.googleapis.com/v0/b/d2app-74e2c.appspot.com/o/assets%2Frides.PNG?alt=media&token=0e8d2b1e-da95-4bb2-82e9-5bd781bb20b8',
-      screen: 'myOrders'
+    id: "4354",
+    title: "My Rides",
+    image:
+      "https://firebasestorage.googleapis.com/v0/b/d2app-74e2c.appspot.com/o/assets%2Frides.PNG?alt=media&token=0e8d2b1e-da95-4bb2-82e9-5bd781bb20b8",
+    screen: "myOrders",
   },
-  {
-      id: '4356',
-      title: 'My Delivery',
-      image: 'https://links.papareact.com/28w',
-      screen: 'myDelivery'
-  },
+  // {
+  //   id: "4356",
+  //   title: "My Deliveries",
+  //   image: "https://links.papareact.com/28w",
+  //   screen: "myDelivery",
+  // },
 ];
 const mapState = ({ data }) => ({
   origin: data.origin,
@@ -44,14 +45,16 @@ const NavOptions = () => {
       data={data}
       renderItem={({ item }) => (
         <TouchableOpacity
-          style={tw`p-2 pl-6 pb-8 pt-4 bg-gray-200 mr-4 w-36 rounded-lg`}
+          style={tw`p-2 pl-6 pb-8 pt-4 bg-gray-200 mr-4 w-40 rounded-lg`}
           onPress={() => navigation.push(item.screen)}
           disabled={!origin}
         >
           <View style={tw`${!origin && "opacity-30"}`}>
             <Image source={{ uri: item.image }} style={styles.image} />
             <View style={tw`flex-row items-center mt-3`}>
-              <Text style={tw`text-base font-bold text-black`}>{item.title}</Text>
+              <Text style={tw`text-base font-bold text-black`}>
+                {item.title}
+              </Text>
               <Icon
                 type="antdesign"
                 name="arrowright"

@@ -58,7 +58,8 @@ const NavigateCard = () => {
       <View
         style={tailwind`px-3 bg-white relative z-10 justify-between flex-1`}
       >
-        <NavFavourites />
+        {/* <NavFavourites /> */}
+        <View></View>
         <View
           style={tailwind`mt-3 flex-row justify-evenly py-3 border-t border-gray-100`}
         >

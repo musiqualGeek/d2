@@ -133,61 +133,63 @@ const EatsScreen = () => {
               style={tw`max-w-lg`}
               showsVerticalScrollIndicator={false}
             >
-              <Text style={styles.modelTitle}>{userD.name}</Text>
-              <View style={tw`flex flex-row justify-around mt-6`}>
-                <View
-                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
-                >
+              <View style={tw`flex flex-row justify-start items-center p-2`}>
+                {selected.isRide ? (
+                  <Image
+                    source={{ uri: "https://links.papareact.com/3pn" }}
+                    style={styles.image2}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: "https://links.papareact.com/28w" }}
+                    style={styles.image2}
+                  />
+                )}
+                <Text style={tw`text-xl mt-2`}>
+                  {selected.isRide ? "Ride Order" : "Delivery Order"}
+                </Text>
+              </View>
+              <View
+                style={tw`flex flex-row justify-around bg-gray-200 mb-2 rounded-lg`}
+              >
+                <View style={tw`flex justify-center items-center py-2`}>
                   <Text>Distance</Text>
                   <Text style={tw`text-lg font-bold`}>{selected.distance}</Text>
                 </View>
-                <View
-                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
-                >
+                <View style={tw`flex justify-center items-center py-2`}>
                   <Text>Price</Text>
                   <Text style={tw`text-lg font-bold`}>${selected.price}</Text>
                 </View>
-                <View
-                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
-                >
+                <View style={tw`flex justify-center items-center py-2`}>
                   <Text>Duration</Text>
                   <Text style={tw`text-lg font-bold`}>
                     {selected.travelTime}
                   </Text>
                 </View>
               </View>
-              <View
-                style={tw`p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
-              >
-                <Text style={tw`text-xs font-bold`}>From: </Text>
+              <Text style={tw`text-xs font-bold`}>From: </Text>
+              <View style={tw`p-4 bg-gray-200 mb-2 rounded-lg`}>
                 <Text style={styles.contactNumber}>
                   {selected.origin.description}
                 </Text>
               </View>
-              <View
-                style={tw`p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
-              >
-                <Text style={tw`text-xs font-bold`}>To: </Text>
+              <Text style={tw`text-xs font-bold`}>To: </Text>
+              <View style={tw`p-4 bg-gray-200 mb-2 rounded-lg`}>
                 <Text style={styles.contactNumber}>
                   {selected.destination.description}
                 </Text>
               </View>
-              <View
-                style={tw`relative p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
-              >
+              <Text style={tw`text-xs font-bold`}>Share trip progress: </Text>
+              <View style={tw`relative p-4 bg-gray-200 mb-2 rounded-lg`}>
                 <TextInput
                   style={tw`pr-8`}
-                  value={
-                    rtTripProgress.length > 0
-                      ? selected.tripProgress
-                      : rtTripProgress
-                  }
+                  value={rtTripProgress}
                   onChangeText={setRtTripProgress}
                   placeholder="Paste Real Time Trip Progress Here ..."
                   placeholderTextColor={"grey"}
                 />
                 <TouchableOpacity
-                  style={tw`absolute right-4 top-6`}
+                  style={tw`absolute right-4 top-5`}
                   onPress={handleShareTripProgress}
                 >
                   <Image
@@ -202,11 +204,11 @@ const EatsScreen = () => {
                   />
                 </TouchableOpacity>
               </View>
-              <Text style={tw`p-2 pl-4`}>
+              {/* <Text style={tw`p-2 pl-4`}>
                 Before Starting the drive please share the trip progress with
                 the passenger
-              </Text>
-              <TouchableOpacity
+              </Text> */}
+              {/* <TouchableOpacity
                 onPress={() => {
                   handleRoute(selected.destination.loaction);
                 }}
@@ -221,14 +223,14 @@ const EatsScreen = () => {
                 <Text style={tw`text-center text-white text-base`}>
                   {selected?.status ? "Share trip progress" : "Closed"}
                 </Text>
-              </TouchableOpacity>
-              <Text style={tw`p-2 pl-4`}>Then you can start Driving ahead</Text>
+              </TouchableOpacity> */}
+              {/* <Text style={tw`p-2 pl-4`}>Then you can start Driving ahead</Text> */}
               <TouchableOpacity
                 onPress={() => {
                   handleRoute(selected.destination.loaction);
                 }}
                 style={[
-                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                  tw`py-3 mb-2 rounded-lg ${!selected && "bg-gray-300"}`,
                   {
                     backgroundColor:
                       selected?.status === "open" ? "#84CC16" : "#DC2626",
@@ -243,7 +245,7 @@ const EatsScreen = () => {
                 <TouchableOpacity
                   onPress={handleCloseOrder}
                   style={[
-                    tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                    tw`py-3 mb-4 rounded-lg ${!selected && "bg-gray-300"}`,
                     {
                       backgroundColor: "#DC2626",
                     },
@@ -293,6 +295,28 @@ const EatsScreen = () => {
                 setSelectedDocId(item.id);
               }}
             >
+              <View
+                style={tw`flex flex-row justify-between items-center mb-4 px-4`}
+              >
+                <View>
+                  {item.data.isRide ? (
+                    <Image
+                      source={{ uri: "https://links.papareact.com/3pn" }}
+                      style={styles.image}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: "https://links.papareact.com/28w" }}
+                      style={styles.image}
+                    />
+                  )}
+                </View>
+                {item.data.createdAt && (
+                  <Text style={tw`text-gray-600 text-xs text-right pr-2`}>
+                    {moment(item.data.createdAt.toDate(), "YYYYMMDD").fromNow()}
+                  </Text>
+                )}
+              </View>
               <View style={tw`flex flex-row`}>
                 <View style={{ width: "14%", paddingTop: 5 }}>
                   <MaterialCommunityIcons
@@ -304,7 +328,7 @@ const EatsScreen = () => {
                 </View>
                 <View style={{ width: "74%" }}>
                   <View style={tw`flex flex-row mb-3`}>
-                    <Text style={tw`text-xs w-10`}>From</Text>
+                    {/* <Text style={tw`text-xs w-10`}>From</Text> */}
                     <Text style={tw`text-xs font-bold`}>
                       {item.data.origin.description.length > 35
                         ? item.data.origin.description.substr(0, 35) + "..."
@@ -313,7 +337,7 @@ const EatsScreen = () => {
                   </View>
                   <View></View>
                   <View style={tw`flex flex-row`}>
-                    <Text style={tw`text-xs w-10`}>To</Text>
+                    {/* <Text style={tw`text-xs w-10`}>To</Text> */}
                     <Text style={tw`text-xs font-bold`}>
                       {item.data.destination.description.length > 35
                         ? item.data.destination.description.substr(0, 35) +
@@ -339,17 +363,10 @@ const EatsScreen = () => {
                     style={styles.icon}
                   />
                   <Text style={{ fontSize: 10 }}>
-                    {item.data?.status === "Open" ? "Open" : "Closed"}
+                    {item.data?.status === "open" ? "Open" : "Closed"}
                   </Text>
                   <Text></Text>
                 </View>
-              </View>
-              <View>
-                {item.data.createdAt && (
-                  <Text style={tw`text-gray-600 text-xs text-right pr-2`}>
-                    {moment(item.data.createdAt.toDate(), "YYYYMMDD").fromNow()}
-                  </Text>
-                )}
               </View>
             </TouchableOpacity>
           )}
@@ -435,5 +452,15 @@ const styles = StyleSheet.create({
   sendIcon: {
     width: 20,
     height: 20,
+  },
+  image: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+  },
+  image2: {
+    width: 60,
+    height: 60,
+    resizeMode: "contain",
   },
 });

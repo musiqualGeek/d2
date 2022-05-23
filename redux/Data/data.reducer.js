@@ -4,6 +4,7 @@ const INITIAL_STATE = {
   origin: null,
   destination: null,
   travelTime: null,
+  kind: null,
 };
 
 const dataReducer = (state = INITIAL_STATE, action) => {
@@ -23,6 +24,11 @@ const dataReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         travelTime: action.payload,
+      };
+    case dataTypes.SET_KIND:
+      return {
+        ...state,
+        kind: action.payload,
       };
     // DEFAULT
     default:

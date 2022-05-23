@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     width: 350,
     borderRadius: 10,
     padding: 20,
-    marginTop: 100,
+    marginTop: "10%",
   },
   SubloginContainer: {
     justifyContent: "center",

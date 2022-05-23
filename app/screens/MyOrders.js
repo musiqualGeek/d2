@@ -24,11 +24,13 @@ import {
   onSnapshot,
   getDoc,
   doc,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../../firebase/utils";
 import { icons } from "../../constants";
 import moment from "moment";
 import BackBtn from "./Modal/BackBtn";
+import * as WebBrowser from "expo-web-browser";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -60,16 +62,37 @@ const MyOrders = () => {
     };
   }, []);
 
+  useEffect(async () => {
+    console.log("here Line 65");
+    if (selected?.userDriver?.length > 0) {
+      console.log("here line 67");
+      const ref = doc(db, "users", selected.userDriver);
+      const docSnap = await getDoc(ref);
+      if (docSnap.exists()) {
+        setDriverData(docSnap.data());
+        console.log("docSnap.data()");
+        console.log(docSnap.data());
+      } else {
+        console.log("No such document!");
+      }
+    }
+  }, [selected]);
+
   useEffect(() => {
-    console.log("userD => ", userD);
-    console.log("Orders => ", orders);
+    // console.log("userD => ", userD);
+    // console.log("Orders => ", orders);
     console.log("driverrrrrrrrrrrrrrr => ", driverData);
   }, [orders, driverData]);
   const handleCloseOrder = (id) => {
-    const q = query(collection(db, "orders"), where("id", "==", id));
+    const q = query(
+      collection(db, "orders"),
+      where("id", "==", id),
+      orderBy("createdAt")
+    );
   };
 
   const logicRenderModel = async () => {
+    console.log("here");
     if (selected?.userDriver?.length > 0) {
       const ref = doc(db, "users", selected.userDriver);
       const docSnap = await getDoc(ref);
@@ -83,6 +106,11 @@ const MyOrders = () => {
   };
 
   const renderModel = () => {
+    console.log("renderModel");
+    console.log(selected);
+    const handletripProgress = async (item) => {
+      await WebBrowser.openBrowserAsync(item);
+    };
     return (
       <Modal
         isVisible={selected ? true : false}
@@ -102,49 +130,56 @@ const MyOrders = () => {
               style={tw`max-w-lg`}
               showsVerticalScrollIndicator={false}
             >
-              <Text style={styles.modelTitle}>{userD.name}</Text>
-              <View style={tw`flex flex-row justify-around mt-6`}>
-                <View
-                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
-                >
+              <View style={tw`flex flex-row justify-start items-center p-2`}>
+                {selected.isRide ? (
+                  <Image
+                    source={{ uri: "https://links.papareact.com/3pn" }}
+                    style={styles.image2}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: "https://links.papareact.com/28w" }}
+                    style={styles.image2}
+                  />
+                )}
+                <Text style={tw`text-xl mt-2`}>
+                  {selected.isRide ? "Ride Order" : "Delivery Order"}
+                </Text>
+              </View>
+              <View
+                style={tw`flex flex-row justify-around bg-gray-200 mb-2 rounded-lg`}
+              >
+                <View style={tw`flex justify-center items-center py-2`}>
                   <Text>Distance</Text>
                   <Text style={tw`text-lg font-bold`}>{selected.distance}</Text>
                 </View>
-                <View
-                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
-                >
+                <View style={tw`flex justify-center items-center py-2`}>
                   <Text>Price</Text>
                   <Text style={tw`text-lg font-bold`}>${selected.price}</Text>
                 </View>
-                <View
-                  style={tw`p-2 pb-2 pt-2 bg-gray-200 mr-2 ml-4 mb-4 mt-2 rounded-lg w-24 flex justify-center items-center`}
-                >
+                <View style={tw`flex justify-center items-center py-2`}>
                   <Text>Duration</Text>
                   <Text style={tw`text-lg font-bold`}>
                     {selected.travelTime}
                   </Text>
                 </View>
               </View>
-              <View
-                style={tw`p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
-              >
-                <Text style={tw`text-xs font-bold`}>From: </Text>
+              <Text style={tw`text-xs font-bold`}>From: </Text>
+              <View style={tw`p-4 bg-gray-200 mb-2 rounded-lg`}>
                 <Text style={styles.contactNumber}>
                   {selected.origin.description}
                 </Text>
               </View>
-              <View
-                style={tw`p-2 pl-4 pb-6 pt-4 bg-gray-200 mr-2 mb-4 ml-4 rounded-lg`}
-              >
-                <Text style={tw`text-xs font-bold`}>To: </Text>
+              <Text style={tw`text-xs font-bold`}>To: </Text>
+              <View style={tw`p-4 bg-gray-200 mb-2 rounded-lg`}>
                 <Text style={styles.contactNumber}>
                   {selected.destination.description}
                 </Text>
               </View>
-              {!selected?.status ? (
+              {selected.userDriver.length === 0 ? (
                 <View
                   style={[
-                    tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                    tw`py-3 mb-2 rounded-lg ${!selected && "bg-gray-300"}`,
                     {
                       backgroundColor: "#84CC16",
                     },
@@ -156,18 +191,83 @@ const MyOrders = () => {
                 </View>
               ) : (
                 <View style={{ flex: 1 }}>
-                  <Image
-                    source={{ uri: driverData?.driverPhoto }}
-                    style={[styles.imgStyle]}
-                    resizeMode="cover"
-                  />
+                  <Text style={tw`text-xs font-bold`}>Driver info: </Text>
+                  <View style={tw`flex-row justify-center items center`}>
+                    <View style={tw`ìtems-center`}>
+                      <Image
+                        source={{ uri: driverData?.avatar }}
+                        style={[
+                          styles.imgStyle1,
+                          tw`bg-gray-200 mb-2 rounded-lg`,
+                        ]}
+                        resizeMode="cover"
+                      />
+                      <Text style={tw`text-center text-xs mb-2`}>Avatar</Text>
+                    </View>
+                  </View>
+                  <View
+                    style={tw`flex-row justify-between items center px-2 mb-2`}
+                  >
+                    <View style={tw`ìtems-center`}>
+                      <Image
+                        source={{ uri: driverData?.carLicensePlate }}
+                        style={[
+                          styles.imgStyle2,
+                          tw`bg-gray-200 mb-2 rounded-lg`,
+                        ]}
+                        resizeMode="cover"
+                      />
+                      <Text style={tw`text-center text-xs mb-2`}>
+                        Car license plate
+                      </Text>
+                    </View>
+                    <View style={tw`ìtems-center`}>
+                      <Image
+                        source={{ uri: driverData?.driverLicense }}
+                        style={[
+                          styles.imgStyle2,
+                          tw`bg-gray-200 mb-2 rounded-lg`,
+                        ]}
+                        resizeMode="cover"
+                      />
+                      <Text style={tw`text-center text-xs mb-2`}>
+                        Driver license
+                      </Text>
+                    </View>
+                    <View style={tw`ìtems-center`}>
+                      <Image
+                        source={{ uri: driverData?.driverPhoto }}
+                        style={[
+                          styles.imgStyle2,
+                          tw`bg-gray-200 mb-2 rounded-lg`,
+                        ]}
+                        resizeMode="cover"
+                      />
+                      <Text style={tw`text-center text-xs mb-2`}>
+                        Driver photo
+                      </Text>
+                    </View>
+                  </View>
                 </View>
+              )}
+              {selected?.tripProgress?.length !== 0 && (
+                <>
+                  <Text style={tw`text-xs font-bold`}>Trip Progress: </Text>
+                  <TouchableOpacity
+                    onPress={() => handletripProgress(selected.tripProgress)}
+                    style={tw`p-4 bg-gray-200 mb-2 rounded-lg`}
+                  >
+                    <Text style={[styles.contactNumber, tw`text-center`]}>
+                      Shared trip progress availble.Press here
+                    </Text>
+                  </TouchableOpacity>
+                </>
               )}
               {selected?.status === "open" && (
                 <TouchableOpacity
                   onPress={handleCloseOrder}
                   style={[
-                    tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
+                    tw`py-3 rounded-lg mb-6 ${!selected && "bg-gray-300"}`,
                     {
                       backgroundColor: "#DC2626",
                     },
@@ -205,7 +305,7 @@ const MyOrders = () => {
           resizeMode="cover"
         />
       </TouchableOpacity>
-      <View style={tw`p-5`}>
+      <View style={tw`p-5 py-0`}>
         <Text style={styles.title2}>Your Orders</Text>
       </View>
       {orders?.length > 0 ? (
@@ -220,6 +320,28 @@ const MyOrders = () => {
                 // setModalVisible(!isModalVisible);
               }}
             >
+              <View
+                style={tw`flex flex-row justify-between items-center mb-4 px-4`}
+              >
+                <View>
+                  {item.isRide ? (
+                    <Image
+                      source={{ uri: "https://links.papareact.com/3pn" }}
+                      style={styles.image}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: "https://links.papareact.com/28w" }}
+                      style={styles.image}
+                    />
+                  )}
+                </View>
+                {item.createdAt && (
+                  <Text style={tw`text-gray-600 text-xs text-right pr-2`}>
+                    {moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}
+                  </Text>
+                )}
+              </View>
               <View style={tw`flex flex-row`}>
                 <View style={{ width: "14%", paddingTop: 5 }}>
                   <MaterialCommunityIcons
@@ -231,7 +353,7 @@ const MyOrders = () => {
                 </View>
                 <View style={{ width: "74%" }}>
                   <View style={tw`flex flex-row mb-3`}>
-                    <Text style={tw`text-xs w-10`}>From</Text>
+                    {/* <Text style={tw`text-xs w-10`}>From</Text> */}
                     <Text style={tw`text-xs font-bold`}>
                       {item.origin.description.length > 35
                         ? item.origin.description.substr(0, 35) + "..."
@@ -240,7 +362,7 @@ const MyOrders = () => {
                   </View>
                   <View></View>
                   <View style={tw`flex flex-row`}>
-                    <Text style={tw`text-xs w-10`}>To</Text>
+                    {/* <Text style={tw`text-xs w-10`}>To</Text> */}
                     <Text style={tw`text-xs font-bold`}>
                       {item.destination.description.length > 35
                         ? item.destination.description.substr(0, 35) + "..."
@@ -267,13 +389,6 @@ const MyOrders = () => {
                   </Text>
                   <Text></Text>
                 </View>
-              </View>
-              <View>
-                {item.createdAt && (
-                  <Text style={tw`text-gray-600 text-xs text-right pr-2`}>
-                    {moment(item.createdAt.toDate(), "YYYYMMDD").fromNow()}
-                  </Text>
-                )}
               </View>
             </TouchableOpacity>
           )}
@@ -336,13 +451,6 @@ const styles = StyleSheet.create({
     margin: 0,
     overflow: "scroll",
   },
-  modelTitle: {
-    fontSize: 24,
-    color: "black",
-    textAlign: "center",
-    marginTop: 20,
-    textTransform: "capitalize",
-  },
   avatar: {
     position: "absolute",
     top: "-12.5%",
@@ -351,12 +459,26 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").width / 4,
     borderRadius: 50,
   },
-  imgStyle: {
-    width: 40,
-    height: 40,
+  imgStyle1: {
+    width: 60,
+    height: 60,
+  },
+  imgStyle2: {
+    width: 80,
+    height: 80,
   },
   icon: {
     width: 20,
     height: 20,
+  },
+  image: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+  },
+  image2: {
+    width: 60,
+    height: 60,
+    resizeMode: "contain",
   },
 });

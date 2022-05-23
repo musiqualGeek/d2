@@ -44,7 +44,6 @@ const Recovery = ({ navigation }) => {
         showsHorizontalScrollIndicator={false}
         style={{ paddingBottom: 20 }}
       >
-        <View></View>
         <View style={styles.loginContainer}>
           <TouchableOpacity
             style={styles.backBtn}
@@ -128,12 +127,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   loginContainer: {
-    justifyContent: "flex-end",
+    // justifyContent: "flex-end",
     backgroundColor: "white",
     width: 350,
     height: 400,
     borderRadius: 10,
     padding: 20,
+    marginTop: "10%",
   },
   SubloginContainer: {
     justifyContent: "center",

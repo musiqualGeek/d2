@@ -44,6 +44,7 @@ const mapState = ({ data, user }) => ({
   origin: data.origin,
   destination: data.destination,
   travelTime: data.travelTime,
+  kind: data.kind,
   userD: user.userD,
   userDocId: user.userDocId,
 });
@@ -51,7 +52,7 @@ const mapState = ({ data, user }) => ({
 const RideOptionsCard = () => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
-  const { origin, destination, travelTime, userD, userDocId } =
+  const { origin, destination, travelTime, kind, userD, userDocId } =
     useSelector(mapState);
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const RideOptionsCard = () => {
       tripProgress: "",
       createdAt: new Date(),
       closedAt: null,
-
+      isRide: kind === "0" ? true : false,
     });
     Alert.alert(
       "configurations!!!",
