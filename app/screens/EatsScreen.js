@@ -15,12 +15,16 @@ import Screen from "../components/Screen";
 import Constants from "expo-constants";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  AntDesign,
+  FontAwesome,
+} from "@expo/vector-icons";
 import { icons } from "../../constants";
 import moment from "moment";
 import Modal from "react-native-modal";
 import * as WebBrowser from "expo-web-browser";
-import { auth, db } from "../../firebase/utils";
+import { auth, db, storage } from "../../firebase/utils";
 import {
   collection,
   query,
@@ -30,6 +34,9 @@ import {
   doc,
 } from "firebase/firestore";
 import { setUserD } from "../../redux/User/user.actions";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import * as DocumentPicker from "expo-document-picker";
+import uuid from "react-native-uuid";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -44,6 +51,8 @@ const EatsScreen = () => {
   const [selected, setSelected] = useState(null);
   const [selectedDocId, setSelectedDocId] = useState(null);
   const [rtTripProgress, setRtTripProgress] = useState("");
+  const [confirmPhoto, setConfirmPhoto] = useState("");
+  const [confirmPhotoSubmit, setConfirmPhotoSubmit] = useState(false);
 
   useEffect(() => {
     const q = query(collection(db, "orders"), where("closedAt", "==", null));
@@ -84,15 +93,27 @@ const EatsScreen = () => {
     console.log("orders", selected);
   }, [selected]);
 
-  const handleCloseOrder = (id) => {
-    const q = query(collection(db, "orders"), where("id", "==", id));
+  const handleCloseOrder = async () => {
+    const userRef = doc(db, "orders", selectedDocId);
+    await updateDoc(userRef, {
+      status: "closed",
+      updatedAt: new Date(),
+    })
+      .then(() => {
+        console.log("status Updated !!");
+      })
+      .catch((err) => {
+        console.log("error => handleShareTripProgress");
+        console.error(err);
+      });
   };
-  const handleRoute = async (item) => {
+  const handleRoute = async (item, item2) => {
     console.log("Selected => ", item);
     await WebBrowser.openBrowserAsync(
-      `https://www.google.com/maps/dir/?api=1&origin&destination=${item.lat.toString()}%2C${item.lng.toString()}&travelmode=driving`
+      `https://www.google.com/maps/dir/?api=1&origin&destination=${item2.lat.toString()}%2C${item2.lng.toString()}&waypoints=${item.lat.toString()}%2C${item.lng.toString()}&travelmode=driving`
     );
   };
+
   const handleShareTripProgress = async () => {
     console.log("id doc =>", selectedDocId);
     const userRef = doc(db, "orders", selectedDocId);
@@ -114,6 +135,60 @@ const EatsScreen = () => {
       });
   };
   const renderModel = () => {
+    // Confirm Photo
+
+    const handleChangeConfirmPhoto = async () => {
+      let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
+      if (result?.uri?.length > 0) setConfirmPhoto(result.uri);
+    };
+
+    const updateConfirmPhoto = async (downloadURL) => {
+      const userRef = doc(db, "orders", selectedDocId);
+      await updateDoc(userRef, {
+        confirmPhoto: downloadURL,
+        updatedAt: new Date(),
+      })
+        .then(() => {
+          console.log("confirmPhoto switched !!");
+          setConfirmPhotoSubmit(true);
+        })
+        .catch((err) => console.error(err));
+    };
+
+    const handleUpload = async () => {
+      const url_uuid = uuid.v4();
+      const storageRef = ref(storage, `${userD?.email}/${url_uuid}.png`);
+      try {
+        const r = await fetch(confirmPhoto);
+        const b = await r.blob();
+        uploadBytes(storageRef, b)
+          .then(() => {
+            getDownloadURL(storageRef).then(async (downloadURL) => {
+              updateConfirmPhoto(downloadURL);
+            });
+          })
+          .catch((error) => {
+            console.log("catch", error);
+          });
+      } catch (error) {
+        console.log("Catch ", error);
+      }
+    };
+
+    const handleSubmit = async () => {
+      try {
+        if (confirmPhoto) await handleUpload();
+      } catch (err) {
+        console.log("Error", err);
+      }
+    };
+
+    // Confirm Photo
+    const handleInfo = async () => {
+      await WebBrowser.openBrowserAsync(
+        "https://support.google.com/maps/answer/7326816?hl=en&co=GENIE.Platform%3DAndroid"
+      );
+    };
     return (
       <Modal
         isVisible={selected ? true : false}
@@ -179,7 +254,12 @@ const EatsScreen = () => {
                   {selected.destination.description}
                 </Text>
               </View>
-              <Text style={tw`text-xs font-bold`}>Share trip progress: </Text>
+              <View style={tw`flex-row justify-between items-center mb-2 pr-1`}>
+                <Text style={tw`text-xs font-bold`}>Share trip progress: </Text>
+                <TouchableOpacity onPress={handleInfo}>
+                  <AntDesign name="infocirlceo" size={16} color="black" />
+                </TouchableOpacity>
+              </View>
               <View style={tw`relative p-4 bg-gray-200 mb-2 rounded-lg`}>
                 <TextInput
                   style={tw`pr-8`}
@@ -192,42 +272,86 @@ const EatsScreen = () => {
                   style={tw`absolute right-4 top-5`}
                   onPress={handleShareTripProgress}
                 >
-                  <Image
-                    style={[
-                      styles.sendIcon,
-                      rtTripProgress.length > 0
-                        ? { tintColor: "#84CC16" }
-                        : { tintColor: "black" },
-                    ]}
-                    source={icons.send}
-                    resizeMode="contain"
-                  />
+                  {selected?.tripProgress?.length > 0 ? (
+                    <FontAwesome
+                      name="check"
+                      size={20}
+                      color="black"
+                      style={{ marginTop: -10 }}
+                    />
+                  ) : (
+                    <Image
+                      style={[
+                        styles.sendIcon,
+                        rtTripProgress.length > 0
+                          ? { tintColor: "#84CC16" }
+                          : { tintColor: "black" },
+                      ]}
+                      source={icons.send}
+                      resizeMode="contain"
+                    />
+                  )}
                 </TouchableOpacity>
               </View>
-              {/* <Text style={tw`p-2 pl-4`}>
-                Before Starting the drive please share the trip progress with
-                the passenger
-              </Text> */}
-              {/* <TouchableOpacity
-                onPress={() => {
-                  handleRoute(selected.destination.loaction);
-                }}
-                style={[
-                  tw`py-3 m-3 rounded-lg ${!selected && "bg-gray-300"}`,
-                  {
-                    backgroundColor:
-                      selected?.status === "open" ? "#84CC16" : "#DC2626",
-                  },
-                ]}
-              >
-                <Text style={tw`text-center text-white text-base`}>
-                  {selected?.status ? "Share trip progress" : "Closed"}
-                </Text>
-              </TouchableOpacity> */}
-              {/* <Text style={tw`p-2 pl-4`}>Then you can start Driving ahead</Text> */}
+              {!selected?.isRide && (
+                <>
+                  <Text style={tw`text-xs font-bold`}>
+                    Delivery Confirmation:{" "}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleChangeConfirmPhoto}
+                    style={tw`relative p-0 bg-gray-200 mb-2 rounded-lg h-40 justify-center items-center`}
+                  >
+                    {confirmPhoto.length > 0 ||
+                    selected?.confirmPhoto?.length > 0 ? (
+                      <Image
+                        source={{
+                          uri:
+                            confirmPhoto.length > 0
+                              ? confirmPhoto
+                              : selected?.confirmPhoto,
+                        }}
+                        style={tw`w-full h-40 rounded-lg`}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={tw`justify-center items-center`}>
+                        <Text style={tw`text-center text-xs font-bold`}>
+                          Confirm Delivery
+                        </Text>
+                      </View>
+                    )}
+                    {(confirmPhoto.length > 0 ||
+                      selected?.confirmPhoto?.length > 0) && (
+                      <TouchableOpacity
+                        onPress={handleSubmit}
+                        style={[
+                          tw`absolute right-0 -bottom-2 py-2 px-4 bg-gray-200 mb-2 rounded-lg`,
+                          {
+                            backgroundColor: "#84CC16",
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={tw`justify-center items-center text-white`}
+                        >
+                          {selected?.confirmPhoto?.length > 0
+                            ? "edit"
+                            : confirmPhotoSubmit
+                            ? "Submitted"
+                            : "Submit"}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </TouchableOpacity>
+                </>
+              )}
               <TouchableOpacity
                 onPress={() => {
-                  handleRoute(selected.destination.loaction);
+                  handleRoute(
+                    selected.origin.loaction,
+                    selected.destination.loaction
+                  );
                 }}
                 style={[
                   tw`py-3 mb-2 rounded-lg ${!selected && "bg-gray-300"}`,

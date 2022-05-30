@@ -31,6 +31,7 @@ import { icons } from "../../constants";
 import moment from "moment";
 import BackBtn from "./Modal/BackBtn";
 import * as WebBrowser from "expo-web-browser";
+import ImageView from "react-native-image-viewing";
 
 const mapState = ({ user }) => ({
   userD: user.userD,
@@ -44,6 +45,8 @@ const MyOrders = () => {
   const [orders, setOrders] = useState(null);
   const [selected, setSelected] = useState(null);
   const [driverData, setDriverData] = useState(null);
+  const [visible, setIsVisible] = useState(false);
+  const [images, setImges] = useState([]);
 
   useEffect(() => {
     const q = query(
@@ -76,7 +79,16 @@ const MyOrders = () => {
         console.log("No such document!");
       }
     }
-  }, [selected]);
+    if (driverData && selected?.confirmPhoto) {
+      setImges([
+        { uri: driverData.avatar },
+        { uri: driverData.carLicensePlate },
+        { uri: driverData.driverLicense },
+        { uri: driverData.driverPhoto },
+        { uri: selected?.confirmPhoto },
+      ]);
+    }
+  }, [selected, driverData]);
 
   useEffect(() => {
     // console.log("userD => ", userD);
@@ -193,7 +205,10 @@ const MyOrders = () => {
                 <View style={{ flex: 1 }}>
                   <Text style={tw`text-xs font-bold`}>Driver info: </Text>
                   <View style={tw`flex-row justify-center items center`}>
-                    <View style={tw`ìtems-center`}>
+                    <TouchableOpacity
+                      onPress={() => setIsVisible(true)}
+                      style={tw`ìtems-center`}
+                    >
                       <Image
                         source={{ uri: driverData?.avatar }}
                         style={[
@@ -203,12 +218,15 @@ const MyOrders = () => {
                         resizeMode="cover"
                       />
                       <Text style={tw`text-center text-xs mb-2`}>Avatar</Text>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                   <View
                     style={tw`flex-row justify-between items center px-2 mb-2`}
                   >
-                    <View style={tw`ìtems-center`}>
+                    <TouchableOpacity
+                      onPress={() => setIsVisible(true)}
+                      style={tw`ìtems-center`}
+                    >
                       <Image
                         source={{ uri: driverData?.carLicensePlate }}
                         style={[
@@ -220,8 +238,11 @@ const MyOrders = () => {
                       <Text style={tw`text-center text-xs mb-2`}>
                         Car license plate
                       </Text>
-                    </View>
-                    <View style={tw`ìtems-center`}>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setIsVisible(true)}
+                      style={tw`ìtems-center`}
+                    >
                       <Image
                         source={{ uri: driverData?.driverLicense }}
                         style={[
@@ -233,8 +254,11 @@ const MyOrders = () => {
                       <Text style={tw`text-center text-xs mb-2`}>
                         Driver license
                       </Text>
-                    </View>
-                    <View style={tw`ìtems-center`}>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setIsVisible(true)}
+                      style={tw`ìtems-center`}
+                    >
                       <Image
                         source={{ uri: driverData?.driverPhoto }}
                         style={[
@@ -246,7 +270,7 @@ const MyOrders = () => {
                       <Text style={tw`text-center text-xs mb-2`}>
                         Driver photo
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               )}
@@ -263,6 +287,46 @@ const MyOrders = () => {
                   </TouchableOpacity>
                 </>
               )}
+              {!selected?.isRide && (
+                <>
+                  <Text style={tw`text-xs font-bold`}>
+                    Delivery Confirmation:
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setIsVisible(true)}
+                    style={tw`relative p-0 bg-gray-200 mb-2 rounded-lg h-40 justify-center items-center`}
+                  >
+                    {selected?.confirmPhoto?.length > 0 ? (
+                      <Image
+                        source={{
+                          uri: selected?.confirmPhoto,
+                        }}
+                        style={tw`w-full h-40 rounded-lg`}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={tw`justify-center items-center`}>
+                        <Text style={tw`text-center text-xs font-bold`}>
+                          Confirm Delivery not here yet
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                </>
+              )}
+              <TouchableOpacity
+                style={[
+                  tw`py-3 mb-2 rounded-lg ${!selected && "bg-gray-300"}`,
+                  {
+                    backgroundColor:
+                      selected?.status === "open" ? "#84CC16" : "#DC2626",
+                  },
+                ]}
+              >
+                <Text style={tw`text-center text-white text-base`}>
+                  Confirm
+                </Text>
+              </TouchableOpacity>
               {selected?.status === "open" && (
                 <TouchableOpacity
                   onPress={handleCloseOrder}
@@ -287,6 +351,12 @@ const MyOrders = () => {
   return (
     <Screen style={tw`bg-white h-full`}>
       <BackBtn navigation={navigation} />
+      <ImageView
+        images={images}
+        imageIndex={0}
+        visible={visible}
+        onRequestClose={() => setIsVisible(false)}
+      />
       <TouchableOpacity
         style={[
           tw`bg-white p-0 rounded-full shadow-lg`,

@@ -108,7 +108,7 @@ const EditProfile = ({ navigation }) => {
           {/* First Name */}
           <View style={styles.detailsContainer}>
             <View style={[styles.searchContainer, styles.shadow]}>
-              <Text style={styles.title4}>First Name</Text>
+              <Text style={styles.title4}>Full Name</Text>
               <TextInput
                 style={styles.searchInput}
                 value={firstName}
@@ -120,11 +120,14 @@ const EditProfile = ({ navigation }) => {
           <View style={styles.detailsContainer}>
             <View style={[styles.searchContainer, styles.shadow]}>
               <Text style={styles.title4}>Email</Text>
-              <TextInput style={styles.searchInput} value={userD?.email} />
+              {/* <TextInput style={styles.searchInput} value={userD?.email} /> */}
+              <Text style={[styles.searchInput, { color: "black" }]}>
+                {userD?.email}
+              </Text>
             </View>
           </View>
           {/* Email */}
-          <View style={styles.detailsContainer}>
+          {/* <View style={styles.detailsContainer}>
             <View style={[styles.searchContainer, styles.shadow]}>
               <Text style={styles.title4}>Phone Number</Text>
               <TextInput
@@ -132,7 +135,7 @@ const EditProfile = ({ navigation }) => {
                 value={userD?.phone || "No phone Number connected."}
               />
             </View>
-          </View>
+          </View> */}
           <TouchableOpacity style={styles.pinkBtn} onPress={handleSubmit}>
             <Text style={styles.textBtn}>Save</Text>
           </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View,ScrollView } from "react-native";
 import tailwind from "tailwind-react-native-classnames";
 import Screen from "./Screen";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
@@ -26,8 +26,8 @@ const NavigateCard = () => {
         Good morning,{" "}
         <Text style={{ textTransform: "capitalize" }}>{userD.name}</Text>
       </Text>
-      <View
-        style={tailwind`border-t border-gray-100 flex-shrink relative z-20 bg-white`}
+      <ScrollView
+        style={tailwind`flex-1 border-t border-gray-100 flex-shrink relative z-20 bg-white`}
       >
         <View style={tailwind`bg-white pb-2`}>
           <GooglePlacesAutocomplete
@@ -52,9 +52,10 @@ const NavigateCard = () => {
             }}
             styles={toInputBoxStyles}
             enablePoweredByContainer={false}
+            keepResultsAfterBlur={true}
           />
         </View>
-      </View>
+      </ScrollView>
       <View
         style={tailwind`px-3 bg-white relative z-10 justify-between flex-1`}
       >

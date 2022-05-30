@@ -110,7 +110,7 @@ const EditProfileDriver = ({ navigation }) => {
           {/* First Name */}
           <View style={styles.detailsContainer}>
             <View style={[styles.searchContainer, styles.shadow]}>
-              <Text style={styles.title4}>First Name</Text>
+              <Text style={styles.title4}>Full Name</Text>
               <TextInput
                 style={styles.searchInput}
                 value={firstName}
@@ -130,7 +130,7 @@ const EditProfileDriver = ({ navigation }) => {
             </View>
           </View>
           {/* Email */}
-          <View style={styles.detailsContainer}>
+          {/* <View style={styles.detailsContainer}>
             <View style={[styles.searchContainer, styles.shadow]}>
               <Text style={styles.title4}>Phone Number</Text>
               <TextInput
@@ -140,7 +140,7 @@ const EditProfileDriver = ({ navigation }) => {
                 keyboardType="numeric"
               />
             </View>
-          </View>
+          </View> */}
           <TouchableOpacity style={styles.pinkBtn} onPress={handleSubmit}>
             <Text style={styles.textBtn}>Save</Text>
           </TouchableOpacity>

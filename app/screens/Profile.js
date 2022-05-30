@@ -56,7 +56,7 @@ const Profile = ({ navigation }) => {
       <ScrollView style={{ backgroundColor: "#f7f8fa" }}>
         <View style={styles.content}>
           <View style={styles.content2}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[
                 styles.itemStyle,
                 {
@@ -114,7 +114,7 @@ const Profile = ({ navigation }) => {
                 <Text style={styles.itemlListStyle}>Settings</Text>
               </View>
               <AntDesign name="right" size={16} color="#c9c8ce" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={[
                 styles.itemStyle,
